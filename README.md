@@ -23,3 +23,5 @@ Aplicatio to collect cultural events. Optionally chat on side
 - PostgreSQL credential:
   - user: ```admin@admin.com```
   - password: ```admin```
+
+![img.png](img.png)

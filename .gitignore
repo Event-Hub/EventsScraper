@@ -31,5 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
-/volume/
-/data/
+/volume
+/data
+/volume/**
+/data/**
