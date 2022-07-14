@@ -1,13 +1,13 @@
-package com.event.scrapper;
+package com.event.scraper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ScrapperApplication {
+public class ScraperApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ScrapperApplication.class, args);
+		SpringApplication.run(ScraperApplication.class, args);
 	}
 
 }

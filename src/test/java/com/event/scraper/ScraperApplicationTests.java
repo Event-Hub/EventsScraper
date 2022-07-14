@@ -1,10 +1,10 @@
-package com.event.scrapper;
+package com.event.scraper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ScrapperApplicationTests {
+class ScraperApplicationTests {
 
 	@Test
 	void contextLoads() {
