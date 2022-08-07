@@ -15,27 +15,23 @@ public class Event {
     private LocalTime time;
     private String link;
 
-    public String getLink() {
-        return link;
-    }
 
-    public void setLink(String link) {
-        this.link = link;
-    }
+
 
     public Event() {
     }
 
-    public Event(String city, String title, String description, String address, LocalDate date, LocalTime time) {
+    public Event(String city, String title, String description, String address, LocalDate date, LocalTime time, String link) {
         this.city = city;
         this.title = title;
         this.description = description;
         this.address = address;
         this.date = date;
         this.time = time;
+        this.link = link;
     }
 
-    public Event(Long eventId, String city, String title, String description, String address, LocalDate date, LocalTime time) {
+    public Event(Long eventId, String city, String title, String description, String address, LocalDate date, LocalTime time, String link) {
         this.eventId = eventId;
         this.city = city;
         this.title = title;
@@ -43,7 +39,9 @@ public class Event {
         this.address = address;
         this.date = date;
         this.time = time;
+        this.link = link;
     }
+
 
     public Long getEventId() {
         return eventId;
@@ -101,17 +99,25 @@ public class Event {
         this.time = time;
     }
 
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(eventId, event.eventId) && Objects.equals(city, event.city) && Objects.equals(title, event.title) && Objects.equals(description, event.description) && Objects.equals(address, event.address) && Objects.equals(date, event.date) && Objects.equals(time, event.time);
+        return Objects.equals(eventId, event.eventId) && Objects.equals(city, event.city) && Objects.equals(title, event.title) && Objects.equals(description, event.description) && Objects.equals(address, event.address) && Objects.equals(date, event.date) && Objects.equals(time, event.time) && Objects.equals(link, event.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventId, city, title, description, address, date, time);
+        return Objects.hash(eventId, city, title, description, address, date, time, link);
     }
 
     @Override
@@ -124,6 +130,7 @@ public class Event {
                 ", address='" + address + '\'' +
                 ", date=" + date +
                 ", time=" + time +
+                ", link='" + link + '\'' +
                 '}';
     }
 }
