@@ -50,6 +50,13 @@
 			<artifactId>liquibase-core</artifactId>
 			<version>4.14.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.tngtech.archunit</groupId>
+			<artifactId>archunit</artifactId>
+			<version>1.0.0-rc1</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
