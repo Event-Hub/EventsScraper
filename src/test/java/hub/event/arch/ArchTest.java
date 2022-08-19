@@ -213,7 +213,4 @@ class ArchTest {
         archRule.check(javaClasses);
 
     }
-
-
-
 }
