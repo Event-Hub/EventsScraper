@@ -9,6 +9,8 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-  <includeAll path="database/change"/>
+  <include file="database/change/change_1.xml"/>
+  <include file="database/change/change_user_2.xml"/>
+  <include file="database/test/test_user_data.sql" context="test"/>
 
 </databaseChangeLog>
