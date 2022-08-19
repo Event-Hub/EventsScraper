@@ -1,6 +1,19 @@
 package hub.event.scrapers.ebilet;
 
-import hub.event.scrapers.Scrappable;
+import hub.event.scrapers.core.PageScraperPort;
+import hub.event.scrapers.core.ScrapedEvent;
 
-class EbiletScraper implements Scrappable {
+import java.util.Collection;
+import java.util.Collections;
+
+class EbiletScraper implements PageScraperPort {
+  @Override
+  public String configurationName() {
+    return null;
+  }
+
+  @Override
+  public Collection<ScrapedEvent> scrap() {
+    return Collections.emptyList();
+  }
 }
