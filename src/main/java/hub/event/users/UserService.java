@@ -5,11 +5,13 @@ package hub.event.users;
 
 import hub.event.auth.AuthService;
 import hub.event.users.dto.UserDto;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+@Service
 public class UserService {
 
     private final UserRepository userRepository;
@@ -21,17 +23,17 @@ public class UserService {
 
     }
 
-    Optional<UserDto> getUserById(Long id) {
+    public Optional<UserDto> getUserById(Long id) {
         return userRepository.findById(id)
                 .map(userDtoMapper::map);
     }
 
-    Optional<UserDto> getUserByUserName(String username) {
+    public Optional<UserDto> getUserByUserName(String username) {
         return userRepository.findByUsername(username)
                 .map(userDtoMapper::map);
     }
 
-    UserDto saveUser(UserDto userDto) {
+    public UserDto saveUser(UserDto userDto) {
         User userToSave = userDtoMapper.map(userDto);
         userToSave.setRegistrationDate(LocalDate.now());
         User savedUser = userRepository.save(userToSave);
@@ -51,9 +53,6 @@ public class UserService {
 
     private User setEntityFields(UserDto source, User target) {
 
-        if (source.getId() != null) {
-            target.setUserId(source.getId());
-        }
         if (source.getUsername() != null) {
             target.setUsername(source.getUsername());
         }

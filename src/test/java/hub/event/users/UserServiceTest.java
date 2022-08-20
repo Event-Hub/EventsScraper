@@ -1,13 +1,13 @@
 package hub.event.users;
 
 import hub.event.users.dto.UserDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest()
 @ActiveProfiles(profiles = {"dev","test"})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest {
 
 
@@ -34,25 +35,56 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById() {
+    @DisplayName("Test of finding user by Id")
+    @Order(1)
+    void getUserByIdTest() {
+        //given
 
-        System.out.println("Get by Id Test");
+        UserDto givenUser = new UserDto(1L,"testUser1", "testUser1@gmail.com",LocalDate.of(2022,7,8),LocalDate.of(1999,7,8));
+        UserDto givenUser2 = new UserDto(2L,"testUser2", "testUser2@poczta.onet.pl",LocalDate.of(2022,8,17),LocalDate.of(2000,6,5));
+
+
+        //when
         Optional<UserDto> userById = userService.getUserById(1L);
-        userById.ifPresentOrElse(System.out::println,() -> System.out.println("Not found"));
         Optional<UserDto> userById2 = userService.getUserById(2L);
-        userById2.ifPresentOrElse(System.out::println,() -> System.out.println("Not found"));
+
+        UserDto actualUser = userById.orElse(new UserDto());
+        UserDto actualUser2 = userById2.orElse(new UserDto());
+
+
+        //then
+        assertAll(
+                () -> assertEquals(givenUser,actualUser),
+                () -> assertEquals(givenUser2,actualUser2)
+        );
+
+
+//        ('testUser1', 'testUser1@gmail.com','2022-07-08','1999-07-08'),
+//        ('testUser2', 'testUser2@poczta.onet.pl','2022-08-17', '2000-06-05');
 
         //TODO Finish Test
     }
 
 
     @Test
-    void getUserByUserName() {
-        fail("Not Implemented");
+    @DisplayName("Test of finding user by username")
+    @Order(2)
+    void getUserByUserNameTest() {
+        //given
+        UserDto givenUser = new UserDto(1L,"testUser1", "testUser1@gmail.com",LocalDate.of(2022,7,8),LocalDate.of(1999,7,8));
+
+        //when
+        Optional<UserDto> userById = userService.getUserByUserName("testUser1");
+        UserDto actualUser = userById.orElse(new UserDto());
+
+        //then
+        assertEquals(givenUser,actualUser);
     }
 
     @Test
-    void saveUser() {
+    @DisplayName("Test of saving in database")
+    @Order(3)
+    void saveUserTest() {
         //given
         UserDto givenUserDto = new UserDto();
         givenUserDto.setUsername("TestUser");
@@ -81,12 +113,34 @@ class UserServiceTest {
     }
 
     @Test
+    @Order(4)
+    @Transactional
+    @DisplayName("Test of updating user")
     void updateUser() {
-        fail("Not Implemented");
+        //given
+        UserDto givenUser = new UserDto(1L,"UpdatedName", "testUser1@gmail.com",LocalDate.of(2022,7,8),LocalDate.of(1999,7,8));
+        //when
+        userService.updateUser(1L,new UserDto(null,"UpdatedName",null,null,null));
+        Optional<UserDto> userById = userService.getUserById(1L);
+        UserDto actualUser = userById.orElse(new UserDto());
+
+        //then
+        assertEquals(givenUser,actualUser);
+
     }
 
     @Test
+    @DisplayName("Test of deleting user")
+    @Order(5)
     void deleteUser() {
-        fail("Not Implemented");
+        //given
+
+        //when
+        userService.deleteUser(2L);
+
+        Optional<UserDto> userById = userService.getUserById(2L);
+
+        //then
+        assertTrue(userById.isEmpty());
     }
 }
