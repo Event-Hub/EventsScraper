@@ -11,12 +11,12 @@ public class ScraperFacade {
 private final LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
 private final ScraperConfigRepository scraperConfigRepository;
 
-private final ProbablyDuplicatedEventCandidateRepository probablyDuplicatedEventCandidateRepository;
+private final DuplicatedEventCandidateRepository duplicatedEventCandidateRepository;
 
-  public ScraperFacade(LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository, ScraperConfigRepository scraperConfigRepository, ProbablyDuplicatedEventCandidateRepository probablyDuplicatedEventCandidateRepository) {
+  public ScraperFacade(LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository, ScraperConfigRepository scraperConfigRepository, DuplicatedEventCandidateRepository duplicatedEventCandidateRepository) {
     this.lastScrapedEventMarkerRepository = lastScrapedEventMarkerRepository;
     this.scraperConfigRepository = scraperConfigRepository;
-    this.probablyDuplicatedEventCandidateRepository = probablyDuplicatedEventCandidateRepository;
+    this.duplicatedEventCandidateRepository = duplicatedEventCandidateRepository;
   }
 
   public void activateScraperByConfigurationName(String scraperName) {
@@ -26,7 +26,7 @@ private final ProbablyDuplicatedEventCandidateRepository probablyDuplicatedEvent
   }
 
   //Maybe should be in separated module
-  public List<ProbablyDuplicatedEventCandidate> getAllProbablyDuplicatedEventCandidates(){
+  public List<DuplicatedEventCandidate> getAllProbablyDuplicatedEventCandidates(){
     throw new NotImplementedException("getAllProbablyDuplicatedEventCandidates is not implemented. ");
   }
 

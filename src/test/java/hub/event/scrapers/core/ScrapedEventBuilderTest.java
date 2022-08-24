@@ -2,6 +2,8 @@ package hub.event.scrapers.core;
 
 import hub.event.scrapers.core.datewithlocation.MultipleEventDateWithLocations;
 import hub.event.scrapers.core.datewithlocation.SingleEventDateWithLocation;
+import hub.event.scrapers.core.exceptions.EventDateEndDateTimeBeforeStartDateTimeException;
+import hub.event.scrapers.core.exceptions.EventDateInPastException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScrapedEventBuilderTest {
 
   @Test
-  void whenUseBuilderThenEventIsBuiltCorrectly() {
+  void whenUseBuilderThenEventIsBuiltCorrectly() throws EventDateInPastException, EventDateEndDateTimeBeforeStartDateTimeException {
     //given
     final String title = "Long party on Normandy";
     final String sourceLink = "citadel://eden.news@human.colonies.gh/evens/123edkfke344";
@@ -30,7 +32,7 @@ class ScrapedEventBuilderTest {
     final LocalDate endDate = LocalDate.of(2022, 10, 16);
     final LocalTime endTime = LocalTime.of(22, 30);
 
-    final SingleEventDateWithLocation singleEventDateWithLocation = SingleEventDateWithLocation.period(startDate, endDate, startTime, endTime, city, address, location);
+    final SingleEventDateWithLocation singleEventDateWithLocation = SingleEventDateWithLocation.period(startDate, startTime, endDate, endTime, city, address, location);
 
     final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(startDate, startTime, city, address, location);
 
@@ -42,6 +44,8 @@ class ScrapedEventBuilderTest {
         .metadata("MetaKey1", "MetaValue1")
         .metadata("MetaKey2", "MetaValue2")
         .metadata("MetaKey3", "MetaValue3")
+        .type("Inline Skating")
+        .type("Skating Workshops")
         .date(singleEventDateWithLocation)
         .scrapedTime(scrapedTime)
         .build();
@@ -71,6 +75,9 @@ class ScrapedEventBuilderTest {
     assertEquals(description, scrapedEvent1.description());
     assertEquals(sourceLink, scrapedEvent1.sourceLink());
     assertEquals(metadata, scrapedEvent1.metadata());
+    assertEquals(2, scrapedEvent1.types().size());
+    assertTrue(scrapedEvent1.types().contains("Inline Skating"));
+    assertTrue(scrapedEvent1.types().contains("Skating Workshops"));
     assertEquals(singleEventDateWithLocation, scrapedEvent1.singleEventDateWithLocation());
     assertNull(scrapedEvent1.multipleEventDateWithLocations());
     assertEquals(scrapedTime, scrapedEvent1.scrapedTime());
@@ -78,11 +85,11 @@ class ScrapedEventBuilderTest {
 
     assertEquals(multipleEventDateWithLocations, scrapedEvent2.multipleEventDateWithLocations());
     assertNull(scrapedEvent2.singleEventDateWithLocation());
-    assertFalse(scrapedEvent2.hasMultipleDateAndLocations());
+    assertTrue(scrapedEvent2.hasMultipleDateAndLocations());
 
     assertEquals(multipleEventDateWithLocations, scrapedEvent3.multipleEventDateWithLocations());
     assertNull(scrapedEvent3.singleEventDateWithLocation());
-    assertFalse(scrapedEvent3.hasMultipleDateAndLocations());
+    assertTrue(scrapedEvent3.hasMultipleDateAndLocations());
   }
 
 }
