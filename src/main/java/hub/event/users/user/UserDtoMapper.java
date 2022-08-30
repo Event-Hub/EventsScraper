@@ -1,6 +1,6 @@
-package hub.event.users;
+package hub.event.users.user;
 
-import hub.event.users.dto.UserDto;
+import hub.event.users.user.dto.UserDto;
 import org.springframework.stereotype.Service;
 
 @Service

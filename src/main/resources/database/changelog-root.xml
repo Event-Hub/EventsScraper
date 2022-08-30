@@ -11,6 +11,7 @@
 
   <include file="database/change/change_1.xml"/>
   <include file="database/change/change_user_2.xml"/>
+  <include file="database/change/change_filter_3.xml"/>
   <include file="database/test/test_user_data.sql" context="test"/>
 
 </databaseChangeLog>

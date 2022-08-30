@@ -1,33 +1,50 @@
-package hub.event.users.dto;
+package hub.event.users.user;
 
+import java.util.List;
+import hub.event.users.filter.Filter;
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class UserDto {
-    private Long id;
+@Entity
+@Table(name = "user_table")
+class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id", nullable = false)
+    private Long userId;
     private String username;
+
     private String email;
+    @Column(name = "registration_date",columnDefinition = "DATE")
     private LocalDate registrationDate;
+    @Column(name = "birth_date",columnDefinition = "DATE")
     private LocalDate birthDate;
+    @OneToMany
+    @JoinColumn(name = "userId")
+    @BatchSize(size = 25)
+    private List<Filter> filters;
 
-    public UserDto() {
-    }
 
-    public UserDto(Long id, String username, String email, LocalDate registrationDate, LocalDate birthDate) {
-        this.id = id;
+
+    public User() { }
+
+    public User(Long userId, String username, String email, LocalDate registrationDate, LocalDate birthDate) {
+        this.userId = userId;
         this.username = username;
-
         this.email = email;
         this.registrationDate = registrationDate;
         this.birthDate = birthDate;
     }
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -64,8 +81,8 @@ public class UserDto {
 
     @Override
     public String toString() {
-        return "UpdateUserDto{" +
-                "id=" + id +
+        return "User{" +
+                "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", registrationDate=" + registrationDate +
@@ -77,12 +94,12 @@ public class UserDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserDto that = (UserDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(registrationDate, that.registrationDate) && Objects.equals(birthDate, that.birthDate);
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(registrationDate, user.registrationDate) && Objects.equals(birthDate, user.birthDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, registrationDate, birthDate);
+        return Objects.hash(userId, username, email, registrationDate, birthDate);
     }
 }

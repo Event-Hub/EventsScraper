@@ -1,10 +1,9 @@
-package hub.event.users;
+package hub.event.users.user;
 
 // Auth comment left in comments to prevent auto delete during imports optimization
 //import hub.event.auth.AuthService;
 
-import hub.event.auth.AuthService;
-import hub.event.users.dto.UserDto;
+import hub.event.users.user.dto.UserDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

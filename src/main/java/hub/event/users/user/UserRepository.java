@@ -1,4 +1,4 @@
-package hub.event.users;
+package hub.event.users.user;
 
 import org.springframework.data.repository.CrudRepository;
 

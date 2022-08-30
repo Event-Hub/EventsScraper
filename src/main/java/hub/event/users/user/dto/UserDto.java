@@ -1,42 +1,33 @@
-package hub.event.users;
+package hub.event.users.user.dto;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
-@Table(name = "user_table")
-class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
-    private Long userId;
+public class UserDto {
+    private Long id;
     private String username;
-
     private String email;
-    @Column(name = "registration_date",columnDefinition = "DATE")
     private LocalDate registrationDate;
-    @Column(name = "birth_date",columnDefinition = "DATE")
     private LocalDate birthDate;
 
+    public UserDto() {
+    }
 
-
-    public User() { }
-
-    public User(Long userId, String username, String email, LocalDate registrationDate, LocalDate birthDate) {
-        this.userId = userId;
+    public UserDto(Long id, String username, String email, LocalDate registrationDate, LocalDate birthDate) {
+        this.id = id;
         this.username = username;
+
         this.email = email;
         this.registrationDate = registrationDate;
         this.birthDate = birthDate;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -73,8 +64,8 @@ class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "userId=" + userId +
+        return "UpdateUserDto{" +
+                "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", registrationDate=" + registrationDate +
@@ -86,12 +77,12 @@ class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(registrationDate, user.registrationDate) && Objects.equals(birthDate, user.birthDate);
+        UserDto that = (UserDto) o;
+        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(registrationDate, that.registrationDate) && Objects.equals(birthDate, that.birthDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, email, registrationDate, birthDate);
+        return Objects.hash(id, username, email, registrationDate, birthDate);
     }
 }

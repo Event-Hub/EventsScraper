@@ -1,17 +1,17 @@
-package hub.event.users;
+package hub.event.users.user;
 
-import hub.event.users.dto.UserDto;
+import hub.event.users.user.dto.UserDto;
+import hub.event.users.user.UserDtoMapper;
+import hub.event.users.user.UserRepository;
+import hub.event.users.user.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,12 +57,6 @@ class UserServiceTest {
                 () -> assertEquals(givenUser,actualUser),
                 () -> assertEquals(givenUser2,actualUser2)
         );
-
-
-//        ('testUser1', 'testUser1@gmail.com','2022-07-08','1999-07-08'),
-//        ('testUser2', 'testUser2@poczta.onet.pl','2022-08-17', '2000-06-05');
-
-        //TODO Finish Test
     }
 
 
