@@ -11,7 +11,7 @@
 
     <changeSet id="0001-01" author="pdob">
         <comment>Create User table</comment>
-        <createTable tableName="user_table">
+        <createTable tableName="USER_TABLE">
 
             <column name="user_id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>

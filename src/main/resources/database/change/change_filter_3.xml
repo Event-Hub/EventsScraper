@@ -11,7 +11,7 @@
 
     <changeSet id="0001-02" author="pdob">
         <comment>Create User table</comment>
-        <createTable tableName="filter">
+        <createTable tableName="FILTER">
 
             <column name="filter_id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
@@ -23,12 +23,12 @@
             <column name="user_id" type="BIGINT"/>
         </createTable>
         <addForeignKeyConstraint  baseColumnNames="user_id"
-                                  baseTableName="filter"
+                                  baseTableName="FILTER"
                                   constraintName="fk_user_filter"
                                   onDelete="CASCADE"
                                   onUpdate="NO ACTION"
                                   referencedColumnNames="user_id"
-                                  referencedTableName="user_table"
+                                  referencedTableName="USER_TABLE"
                                   validate="true"/>
 
     </changeSet>

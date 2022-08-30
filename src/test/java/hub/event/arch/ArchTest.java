@@ -39,6 +39,7 @@ class ArchTest {
     public static final String JAVAX = "..javax..";
     public static final String HTMLUNIT = "..htmlunit..";
     public static final String JSOUP = "..jsoup..";
+    public static final String HIBERNATE = "..org.hibernate..";
 
 
     @Test
@@ -106,8 +107,8 @@ class ArchTest {
                 .that()
                 .resideInAPackage(USER)
                 .should().onlyDependOnClassesThat()
-                .resideInAnyPackage(JAVA, JAVAX, SPRING,
-                        AUTH, USER);
+                .resideInAnyPackage(JAVA, JAVAX, SPRING,HIBERNATE,
+                        AUTH,USER);
         archRule.check(javaClasses);
 
     }

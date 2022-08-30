@@ -46,6 +46,7 @@ public class UserService {
                 .map(userDtoMapper::map);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
