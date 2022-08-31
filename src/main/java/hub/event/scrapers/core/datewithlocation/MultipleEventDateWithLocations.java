@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MultipleEventDateWithLocations {
-  private Collection<EventDateWithLocation> eventDateWithLocations;
+  private final Collection<EventDateWithLocation> eventDateWithLocations;
 
   private MultipleEventDateWithLocations() {
     eventDateWithLocations = new ArrayList<>();

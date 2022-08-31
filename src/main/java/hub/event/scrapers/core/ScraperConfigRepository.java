@@ -6,7 +6,7 @@ interface ScraperConfigRepository {
 
   boolean exists(String scraperName);
 
-  void create(String scraperName);
+  void create(String scraperName, boolean activeState);
 
   void activate(String scraperConfigurationName);
 

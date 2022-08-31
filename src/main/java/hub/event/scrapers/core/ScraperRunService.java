@@ -18,16 +18,17 @@ class ScraperRunService {
   private final ScraperConfigRepository scraperConfigRepository;
   private final EventCandidateAnalyzer eventCandidateAnalyzer;
   private final EventFacadeAdapter eventFacadeAdapter;
-
   private final DuplicatedEventCandidateRepository duplicatedEventCandidateRepository;
+  private final LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
   private final List<PageScraperPort> pageScrapers;
 
   @Autowired
-  ScraperRunService(ScraperConfigRepository scraperConfigRepository, EventCandidateAnalyzer eventCandidateAnalyzer, EventFacadeAdapter eventFacadeAdapter, DuplicatedEventCandidateRepository duplicatedEventCandidateRepository, List<PageScraperPort> pageScrapers) {
+  ScraperRunService(ScraperConfigRepository scraperConfigRepository, EventCandidateAnalyzer eventCandidateAnalyzer, EventFacadeAdapter eventFacadeAdapter, DuplicatedEventCandidateRepository duplicatedEventCandidateRepository, LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository, List<PageScraperPort> pageScrapers) {
     this.scraperConfigRepository = scraperConfigRepository;
     this.eventCandidateAnalyzer = eventCandidateAnalyzer;
     this.eventFacadeAdapter = eventFacadeAdapter;
     this.duplicatedEventCandidateRepository = duplicatedEventCandidateRepository;
+    this.lastScrapedEventMarkerRepository = lastScrapedEventMarkerRepository;
     this.pageScrapers = pageScrapers;
   }
 
@@ -57,39 +58,62 @@ class ScraperRunService {
     if (!duplicatedEventCandidates.isEmpty()) {
       duplicatedEventCandidateRepository.saveAll(duplicatedEventCandidates);
     }
+
+    final List<String> runScraperConfigurationsNames = getRunScraperConfigurationsNames(pageScrapersToRun);
+    lastScrapedEventMarkerRepository.makeDraftActive(runScraperConfigurationsNames);
+
   }
 
   private List<PageScraperPort> getScraperThatConfigNotFoundByConfigurationName(Collection<ScraperConfig> scraperConfigs) {
-    final List<String> availableScraperConfigByName = scraperConfigs.stream().map(ScraperConfig::configurationName).toList();
+    final List<String> availableScraperConfigByName = scraperConfigs.stream()
+        .map(ScraperConfig::configurationName)
+        .toList();
 
-    return pageScrapers.stream().filter(pageScraper -> !availableScraperConfigByName.contains(pageScraper.configurationName())).toList();
+    return pageScrapers.stream()
+        .filter(pageScraper -> !availableScraperConfigByName.contains(pageScraper.configurationName()))
+        .toList();
   }
 
   private void saveActiveConfigAndAppendToConfigList(PageScraperPort pageScraperPort, Collection<ScraperConfig> scraperConfigs) {
-    scraperConfigRepository.create(pageScraperPort.configurationName());
-    scraperConfigs.add(new ScraperConfig(pageScraperPort.configurationName(), true));
+    scraperConfigRepository.create(pageScraperPort.configurationName(), true);
+    final ScraperConfig scraperConfig = new ScraperConfig(pageScraperPort.configurationName(), true);
+
+    scraperConfigs.add(scraperConfig);
   }
 
   private List<PageScraperPort> getActiveScrapersThatShouldBeRun(Collection<ScraperConfig> scraperConfigs) {
-    final Map<String, Boolean> configStatusByScraperConfigurationNameMap = scraperConfigs.stream().collect(Collectors.toMap(ScraperConfig::configurationName, ScraperConfig::isActive));
+    final Map<String, Boolean> configStatusByScraperConfigurationNameMap = scraperConfigs.stream()
+        .collect(Collectors.toMap(ScraperConfig::configurationName, ScraperConfig::isActive));
 
-    return pageScrapers.stream().filter(scraper -> configStatusByScraperConfigurationNameMap.get(scraper.configurationName())).toList();
+    return pageScrapers.stream()
+        .filter(scraper -> configStatusByScraperConfigurationNameMap.get(scraper.configurationName()))
+        .toList();
   }
 
   private List<ScrapedEvent> runScrapersForEvents(List<PageScraperPort> pageScrapersToRun) {
-    return pageScrapersToRun.parallelStream().map(PageScraperPort::scrap).flatMap(Collection::stream).toList();
+    return pageScrapersToRun.parallelStream()
+        .map(PageScraperPort::scrap)
+        .flatMap(Collection::stream)
+        .toList();
   }
 
   private List<ScrapedEvent> extractNotDuplicateScrapedEvents(List<AnalyzedEventCandidate> analyzedEventCandidates) {
-    return analyzedEventCandidates.stream().filter(AnalyzedEventCandidate::isNotDuplicate).map(AnalyzedEventCandidate::scrapedEvent).toList();
+    return analyzedEventCandidates.stream()
+        .filter(AnalyzedEventCandidate::isNotDuplicate)
+        .map(AnalyzedEventCandidate::scrapedEvent)
+        .toList();
   }
 
   private List<AnalyzedEventCandidate> extractDuplicateScrapedEvents(List<AnalyzedEventCandidate> analyzedEventCandidates) {
-    return analyzedEventCandidates.stream().filter(AnalyzedEventCandidate::isDuplicate).toList();
+    return analyzedEventCandidates.stream()
+        .filter(AnalyzedEventCandidate::isDuplicate)
+        .toList();
   }
 
   private List<DuplicatedEventCandidate> mapAnalyzedEventCandidateToDuplicatedEventCandidate(List<AnalyzedEventCandidate> analyzedEventCandidateMarkedAsDuplicate) {
-    return analyzedEventCandidateMarkedAsDuplicate.stream().map(this::mapToDuplicatedEventCandidate).toList();
+    return analyzedEventCandidateMarkedAsDuplicate.stream()
+        .map(this::mapToDuplicatedEventCandidate)
+        .toList();
   }
 
   private DuplicatedEventCandidate mapToDuplicatedEventCandidate(AnalyzedEventCandidate analyzedEventCandidate) {
@@ -99,6 +123,11 @@ class ScraperRunService {
     final List<Integer> duplicateEventIdList = analyzedEventCandidate.duplicateEventIdList();
 
     return new DuplicatedEventCandidate(scrapedEvent, duplicateCandidateUUIDsList, duplicateEventIdList);
+  }
 
+  private List<String> getRunScraperConfigurationsNames(List<PageScraperPort> pageScrapersToRun) {
+    return pageScrapersToRun.stream()
+        .map(PageScraperPort::configurationName)
+        .toList();
   }
 }

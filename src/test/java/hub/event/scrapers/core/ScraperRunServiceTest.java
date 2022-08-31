@@ -33,6 +33,8 @@ class ScraperRunServiceTest {
   private EventFacadeAdapter eventFacadeAdapter;
   @Mock
   private DuplicatedEventCandidateRepository duplicatedEventCandidateRepository;
+  @Mock
+  private LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
   @Captor
   private ArgumentCaptor<List<ScrapedEvent>> scrapedEventListCaptor;
   @Captor
@@ -57,7 +59,7 @@ class ScraperRunServiceTest {
 
     final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper, noConfigScraper1, noConfigScraper2, inactiveScraper);
     final Collection<ScraperConfig> scraperConfigs = new ArrayList<>(Arrays.asList(activeScraperConfig, inactiveScraperConfig));
-    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, pageScrapers);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
 
     //when
     when(activeScraper.configurationName()).thenReturn(activeScraperName);
@@ -70,10 +72,10 @@ class ScraperRunServiceTest {
     scraperRunService.start();
 
     verify(scraperConfigRepository).allScraperConfigs();
-    verify(scraperConfigRepository).create(noConfigScraper1Name);
-    verify(scraperConfigRepository).create(noConfigScraper2Name);
-    verify(scraperConfigRepository, never()).create(activeScraperName);
-    verify(scraperConfigRepository, never()).create(inactiveScraperName);
+    verify(scraperConfigRepository).create(noConfigScraper1Name, true);
+    verify(scraperConfigRepository).create(noConfigScraper2Name, true);
+    verify(scraperConfigRepository, never()).create(activeScraperName, true);
+    verify(scraperConfigRepository, never()).create(inactiveScraperName, true);
   }
 
   @Test
@@ -93,7 +95,7 @@ class ScraperRunServiceTest {
 
     final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper1, activeScraper2, inactiveScraper);
     final Collection<ScraperConfig> scraperConfigs = new ArrayList<>(Arrays.asList(activeScraper1Config, activeScraper2Config, inactiveScraperConfig));
-    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, pageScrapers);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
 
     //when
     when(activeScraper1.configurationName()).thenReturn(activeScraperName1);
@@ -105,8 +107,7 @@ class ScraperRunServiceTest {
     //then
     scraperRunService.start();
 
-    verify(scraperConfigRepository).allScraperConfigs();
-    verify(scraperConfigRepository, never()).create(anyString());
+    verify(scraperConfigRepository, never()).create(anyString(), anyBoolean());
     verify(activeScraper1).scrap();
     verify(activeScraper2).scrap();
     verify(inactiveScraper, never()).scrap();
@@ -150,7 +151,7 @@ class ScraperRunServiceTest {
     final AnalyzedEventCandidate analyzedEventCandidate3 = new AnalyzedEventCandidate(scrapedEvent3);
 
     final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper1, activeScraper2);
-    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, pageScrapers);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
 
     //when
     when(activeScraper1.configurationName()).thenReturn(activeScraperName1);
@@ -216,7 +217,7 @@ class ScraperRunServiceTest {
     analyzedEventCandidate3.addDuplicateCandidate(scrapedEvent1);
 
     final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper1, activeScraper2);
-    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, pageScrapers);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
 
     //when
     when(activeScraper1.configurationName()).thenReturn(activeScraperName1);
@@ -301,7 +302,7 @@ class ScraperRunServiceTest {
     analyzedEventCandidate2.addDuplicateEvent(existsEvent);
 
     final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper1, activeScraper2);
-    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, pageScrapers);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
 
     //when
     when(activeScraper1.configurationName()).thenReturn(activeScraperName1);
@@ -339,5 +340,63 @@ class ScraperRunServiceTest {
         .contains(
             tuple(scrapedEvent2, 0, 1, "1012")
         );
+  }
+
+  @Test
+  void whenScrapedEventSavedThenMakeLastScrapedEventMarkerDraftActive() throws EventDateInPastException {
+    //given
+    final PageScraperPort activeScraper1 = mock(PageScraperPort.class);
+    final PageScraperPort activeScraper2 = mock(PageScraperPort.class);
+
+    final String activeScraperName1 = "active1";
+    final String activeScraperName2 = "active2";
+
+    final ScraperConfig activeScraper1Config = new ScraperConfig(activeScraperName1, true);
+    final ScraperConfig activeScraper2Config = new ScraperConfig(activeScraperName2, true);
+    final Collection<ScraperConfig> scraperConfigs = new ArrayList<>(Arrays.asList(activeScraper1Config, activeScraper2Config));
+
+    final ScrapedEvent scrapedEvent1 = ScrapedEvent.builder()
+        .title("Title1")
+        .description("Description1")
+        .scrapedTime(LocalDateTime.now())
+        .date(SingleEventDateWithLocation.single(LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), "Palaven", "Addres 1", "location 2"))
+        .build();
+    final ScrapedEvent scrapedEvent2 = ScrapedEvent.builder()
+        .title("Title2")
+        .description("Description2")
+        .scrapedTime(LocalDateTime.now())
+        .date(SingleEventDateWithLocation.single(LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), "Thessia", "Addres 2", "location 22"))
+        .build();
+    final ScrapedEvent scrapedEvent3 = ScrapedEvent.builder()
+        .title("Title1")
+        .description("Description1")
+        .scrapedTime(LocalDateTime.now())
+        .date(SingleEventDateWithLocation.single(LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), "Eden Prime", "Addres 134", "location 166"))
+        .build();
+    final List<ScrapedEvent> scrapedEventList = Arrays.asList(scrapedEvent1, scrapedEvent2, scrapedEvent3);
+
+    final AnalyzedEventCandidate analyzedEventCandidate1 = new AnalyzedEventCandidate(scrapedEvent1);
+    final AnalyzedEventCandidate analyzedEventCandidate2 = new AnalyzedEventCandidate(scrapedEvent2);
+    final AnalyzedEventCandidate analyzedEventCandidate3 = new AnalyzedEventCandidate(scrapedEvent3);
+
+    final List<PageScraperPort> pageScrapers = Arrays.asList(activeScraper1, activeScraper2);
+    final ScraperRunService scraperRunService = new ScraperRunService(scraperConfigRepository, eventCandidateAnalyzer, eventFacadeAdapter, duplicatedEventCandidateRepository, lastScrapedEventMarkerRepository, pageScrapers);
+
+    //when
+    when(activeScraper1.configurationName()).thenReturn(activeScraperName1);
+    when(activeScraper2.configurationName()).thenReturn(activeScraperName2);
+
+    when(activeScraper1.scrap()).thenReturn(Arrays.asList(scrapedEvent1));
+    when(activeScraper2.scrap()).thenReturn(Arrays.asList(scrapedEvent2, scrapedEvent3));
+
+    when(scraperConfigRepository.allScraperConfigs()).thenReturn(scraperConfigs);
+
+    when(eventCandidateAnalyzer.analyze(scrapedEventList))
+        .thenReturn(Arrays.asList(analyzedEventCandidate1, analyzedEventCandidate2, analyzedEventCandidate3));
+
+    //then
+    scraperRunService.start();
+
+    verify(lastScrapedEventMarkerRepository).makeDraftActive(List.of(activeScraperName1,activeScraperName2));
   }
 }

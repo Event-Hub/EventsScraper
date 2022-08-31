@@ -43,12 +43,12 @@ class LastScrapedEventMarkerRepositoryTest {
     assertThat(lastScrapedEventMarkerEntityCaptor.getAllValues())
         .extracting(
             LastScrapedEventMarkerEntity::getScraperConfigurationName,
-            LastScrapedEventMarkerEntity::getEventDate,
+            LastScrapedEventMarkerEntity::getRunDateTime,
             LastScrapedEventMarkerEntity::getEventTitle,
             LastScrapedEventMarkerEntity::getMarker
         ).contains(
-            tuple(eventMarker1.scraperConfigurationName(), eventMarker1.eventDate(), eventMarker1.eventTitle(), eventMarker1.marker()),
-            tuple(eventMarker2.scraperConfigurationName(), eventMarker2.eventDate(), eventMarker2.eventTitle(), eventMarker2.marker())
+            tuple(eventMarker1.scraperConfigurationName(), eventMarker1.runDateTime(), eventMarker1.eventTitle(), eventMarker1.marker()),
+            tuple(eventMarker2.scraperConfigurationName(), eventMarker2.runDateTime(), eventMarker2.eventTitle(), eventMarker2.marker())
         );
 
   }
@@ -63,7 +63,7 @@ class LastScrapedEventMarkerRepositoryTest {
         .thenReturn(Optional.empty());
 
     //then
-    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName);
+    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName, true);
 
     assertThat(lastScrapedEventMarker).isEmpty();
     verify(lastScrapedEventMarkerEntityRepository).findByScraperConfigurationName(scraperConfigurationName);
@@ -77,22 +77,23 @@ class LastScrapedEventMarkerRepositoryTest {
 
     final LastScrapedEventMarkerEntity lastScrapedEventMarkerEntity = new LastScrapedEventMarkerEntity();
     lastScrapedEventMarkerEntity.setMarker("maker1");
-    lastScrapedEventMarkerEntity.setEventDate(localDateTime);
+    lastScrapedEventMarkerEntity.setRunDateTime(localDateTime);
     lastScrapedEventMarkerEntity.setEventTitle("title1");
     lastScrapedEventMarkerEntity.setScraperConfigurationName("exists_scraper");
+    lastScrapedEventMarkerEntity.setComplete(true);
 
     //when
     when(lastScrapedEventMarkerEntityRepository.findByScraperConfigurationName(scraperConfigurationName))
         .thenReturn(Optional.of(lastScrapedEventMarkerEntity));
 
     //then
-    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName);
+    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName, true);
 
     assertThat(lastScrapedEventMarker).isNotEmpty()
         .get()
         .extracting(
             LastScrapedEventMarker::scraperConfigurationName,
-            LastScrapedEventMarker::eventDate,
+            LastScrapedEventMarker::runDateTime,
             LastScrapedEventMarker::eventTitle,
             LastScrapedEventMarker::marker
         )

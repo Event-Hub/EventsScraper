@@ -41,7 +41,7 @@ class ScraperRunLogFacadeTest {
 
     verify(scraperRunLogRepository).save(scraperRunErrorLogArgumentCaptor.capture());
 
-    final ScraperRunErrorLog scraperRunErrorLog = scraperRunErrorLogArgumentCaptor.capture();
+    final ScraperRunErrorLog scraperRunErrorLog = scraperRunErrorLogArgumentCaptor.getValue();
 
     assertNotNull(scraperRunErrorLog);
     assertEquals(configurationName, scraperRunErrorLog.configurationName());
@@ -66,7 +66,7 @@ class ScraperRunLogFacadeTest {
 
     verify(scraperRunLogRepository).save(scraperRunStatusLogArgumentCaptor.capture());
 
-    final ScraperRunStatusLog scraperRunStatusLog = scraperRunStatusLogArgumentCaptor.capture();
+    final ScraperRunStatusLog scraperRunStatusLog = scraperRunStatusLogArgumentCaptor.getValue();
 
     assertNotNull(scraperRunStatusLog);
     assertEquals(configurationName, scraperRunStatusLog.configurationName());

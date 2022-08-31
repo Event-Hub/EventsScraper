@@ -10,10 +10,12 @@ class LastScrapedEventMarkerEntity {
   @Id
   private String scraperConfigurationName;
   @Column(nullable = false)
-  private LocalDateTime eventDate;
+  private LocalDateTime runDateTime;
   private String eventTitle;
   @Column(nullable = false)
   private String marker;
+  @Column(nullable = false)
+  private Boolean complete;
 
   LastScrapedEventMarkerEntity() {
   }
@@ -26,12 +28,12 @@ class LastScrapedEventMarkerEntity {
     this.scraperConfigurationName = scraperConfigurationName;
   }
 
-  public LocalDateTime getEventDate() {
-    return eventDate;
+  public LocalDateTime getRunDateTime() {
+    return runDateTime;
   }
 
-  public void setEventDate(LocalDateTime eventDate) {
-    this.eventDate = eventDate;
+  public void setRunDateTime(LocalDateTime runDateTime) {
+    this.runDateTime = runDateTime;
   }
 
   public String getEventTitle() {
@@ -48,5 +50,13 @@ class LastScrapedEventMarkerEntity {
 
   public void setMarker(String marker) {
     this.marker = marker;
+  }
+
+  public Boolean getComplete() {
+    return complete;
+  }
+
+  public void setComplete(Boolean complete) {
+    this.complete = complete;
   }
 }
