@@ -1,3 +1,7 @@
 package hub.event.events;
- public class EventService {
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class EventService {
 }
