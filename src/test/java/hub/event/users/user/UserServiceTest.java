@@ -88,13 +88,6 @@ class UserServiceTest {
         //when
         UserDto userDtoSaved = userService.saveUser(givenUserDto);
 
-        System.out.println("Save User Test");
-        System.out.println("User to save:");
-        System.out.println(givenUserDto);
-
-        System.out.println("Saved user:");
-        System.out.println(userDtoSaved);
-
         //then
         assertAll(
                 () -> assertEquals(givenUserDto.getUsername(),userDtoSaved.getUsername()),
