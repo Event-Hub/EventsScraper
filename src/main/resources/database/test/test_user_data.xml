@@ -9,11 +9,17 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-  <include file="database/change/change_1.xml"/>
-  <include file="database/change/change_user_2.xml"/>
-  <include file="database/change/change_filter_3.xml"/>
-  <include file="database/test/test_user_data.xml" context="test"/>
-  <include file="database/test/test_filter_data.sql" context="test"/>
+  <changeSet id="0002-01" author="pdob">
+    <comment>Load test data for users</comment>
+    <loadUpdateData encoding="UTF-8"
+                    file="database/test/testUsers.csv"
+                    separator="," primaryKey="user_id" tableName="USER_TABLE">
 
-
+      <column name="user_id" type="BIGINT"/>
+      <column name="username" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)"/>
+      <column name="registration_date" type="DATE"/>
+      <column name="birth_date" type="DATE"/>
+    </loadUpdateData>
+  </changeSet>
 </databaseChangeLog>

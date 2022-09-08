@@ -4,6 +4,8 @@ import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 class UserDtoMapper {
 
@@ -28,6 +30,7 @@ class UserDtoMapper {
         user.setEmail(dto.getEmail());
         user.setRegistrationDate(dto.getRegistrationDate());
         user.setBirthDate(dto.getBirthDate());
+        user.setFilters(new ArrayList<>());
 
         return user;
     }

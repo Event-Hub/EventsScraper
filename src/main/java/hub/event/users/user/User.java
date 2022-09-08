@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "USER_TABLE")
-class User {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id", nullable = false)
@@ -33,6 +33,13 @@ class User {
 
     public User(Long userId, String username, String email, LocalDate registrationDate, LocalDate birthDate) {
         this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.registrationDate = registrationDate;
+        this.birthDate = birthDate;
+    }
+
+    public User( String username, String email, LocalDate registrationDate, LocalDate birthDate) {
         this.username = username;
         this.email = email;
         this.registrationDate = registrationDate;
