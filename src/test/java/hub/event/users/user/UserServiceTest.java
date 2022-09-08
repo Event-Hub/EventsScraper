@@ -1,5 +1,7 @@
 package hub.event.users.user;
 
+import hub.event.users.filter.FilterDtoMapper;
+import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.UserDtoMapper;
 import hub.event.users.user.UserRepository;
@@ -29,9 +31,12 @@ class UserServiceTest {
     @Autowired
     private UserDtoMapper userDtoMapper;
 
+    @Autowired
+    private FilterDtoMapper filterDtoMapper;
+
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository,userDtoMapper);
+        userService = new UserService(userRepository,userDtoMapper,filterDtoMapper);
     }
 
     @Test

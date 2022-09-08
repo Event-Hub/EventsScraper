@@ -4,9 +4,9 @@ import hub.event.users.filter.dto.FilterDto;
 import org.springframework.stereotype.Service;
 
 @Service
-class FilterDtoMapper {
+public class FilterDtoMapper {
 
-    FilterDto map(Filter filter) {
+    public FilterDto map(Filter filter) {
         FilterDto dto = new FilterDto();
 
         dto.setFilterId(filter.getFilterId());
@@ -19,7 +19,7 @@ class FilterDtoMapper {
         return dto;
     }
 
-    Filter map(FilterDto dto) {
+    public Filter map(FilterDto dto) {
         Filter filter = new Filter();
 
         filter.setFilterId(dto.getFilterId());
