@@ -79,26 +79,26 @@ class UserServiceTest {
     @Test
     @DisplayName("Test of saving in database")
     @Order(3)
+//    @Disabled
     void saveUserTest() {
         //given
         UserDto givenUserDto = new UserDto();
         givenUserDto.setUsername("TestUser");
         givenUserDto.setEmail("test.user@gmail.com");
         givenUserDto.setBirthDate(LocalDate.of(1989, 3, 12));
-        givenUserDto.setId(null);
-//        givenUserDto.setId(103L);
+
 
         //when
         UserDto userDtoSaved = userService.saveUser(givenUserDto);
 
         //then
-//        assertAll(
-//                () -> assertEquals(givenUserDto.getUsername(), userDtoSaved.getUsername()),
-//                () -> assertEquals(givenUserDto.getEmail(), userDtoSaved.getEmail()),
-//                () -> assertEquals(givenUserDto.getBirthDate(), userDtoSaved.getBirthDate()),
-//                () -> assertNotNull(userDtoSaved.getRegistrationDate()),
-//                () -> assertNotNull(userDtoSaved.getId())
-//        );
+        assertAll(
+                () -> assertEquals(givenUserDto.getUsername(), userDtoSaved.getUsername()),
+                () -> assertEquals(givenUserDto.getEmail(), userDtoSaved.getEmail()),
+                () -> assertEquals(givenUserDto.getBirthDate(), userDtoSaved.getBirthDate()),
+                () -> assertNotNull(userDtoSaved.getRegistrationDate()),
+                () -> assertNotNull(userDtoSaved.getId())
+        );
 
     }
 
@@ -122,6 +122,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Test of deleting user")
     @Order(5)
+//    @Disabled
     void deleteUser() {
         //given
 

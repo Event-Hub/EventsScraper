@@ -21,5 +21,10 @@
       <column name="registration_date" type="DATE"/>
       <column name="birth_date" type="DATE"/>
     </loadUpdateData>
+
+      <sql  dbms="h2,postgresql" splitStatements="false">
+        alter sequence user_id_seq restart with 103;
+      </sql>
+
   </changeSet>
 </databaseChangeLog>

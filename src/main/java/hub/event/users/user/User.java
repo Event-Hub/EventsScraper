@@ -1,6 +1,8 @@
 package hub.event.users.user;
 
 import java.util.List;
+
+import com.sun.istack.NotNull;
 import hub.event.users.filter.Filter;
 import org.hibernate.annotations.BatchSize;
 
@@ -10,9 +12,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "USER_TABLE")
+@SequenceGenerator(name = "USER_ID_SEQ", allocationSize = 1, initialValue = 1)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "USER_ID_SEQ", strategy = GenerationType.SEQUENCE)
     @Column(name="user_id", nullable = false)
     private Long userId;
     private String username;
@@ -24,7 +27,6 @@ public class User {
     private LocalDate birthDate;
     @OneToMany
     @JoinColumn(name = "userId")
-    @BatchSize(size = 25)
     private List<Filter> filters;
 
 

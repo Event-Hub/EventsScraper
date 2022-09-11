@@ -40,6 +40,7 @@ class ArchTest {
     public static final String HTMLUNIT = "..htmlunit..";
     public static final String JSOUP = "..jsoup..";
     public static final String HIBERNATE = "..org.hibernate..";
+    public static final String FAKER = "..com.github.javafaker..";
 
 
     @Test
@@ -107,8 +108,8 @@ class ArchTest {
                 .that()
                 .resideInAPackage(USER)
                 .should().onlyDependOnClassesThat()
-                .resideInAnyPackage(JAVA, JAVAX, SPRING,HIBERNATE,
-                        AUTH,USER);
+                .resideInAnyPackage(JAVA, JAVAX, SPRING, HIBERNATE, FAKER,
+                        AUTH, USER);
         archRule.check(javaClasses);
 
     }
@@ -159,7 +160,7 @@ class ArchTest {
                 .resideInAPackage(USER_API)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(JAVA, JAVAX, SPRING,
-                        NEWSLETTER,EVENTS,USER,AUTH, USER_API);
+                        NEWSLETTER, EVENTS, USER, AUTH, USER_API);
         archRule.check(javaClasses);
 
     }
@@ -193,7 +194,7 @@ class ArchTest {
                 .resideInAPackage(ADMIN_API)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(JAVA, JAVAX, SPRING,
-                        USER,AUTH,STATS, ADMIN_API);
+                        USER, AUTH, STATS, ADMIN_API);
         archRule.check(javaClasses);
 
     }
@@ -210,7 +211,7 @@ class ArchTest {
                 .resideInAPackage(STATS)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(JAVA, JAVAX, SPRING,
-                        SCRAPERS,EVENTS,USER, STATS);
+                        SCRAPERS, EVENTS, USER, STATS);
         archRule.check(javaClasses);
 
     }

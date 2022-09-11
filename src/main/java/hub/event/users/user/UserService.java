@@ -50,7 +50,6 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .map(userDtoMapper::mapFull);
     }
-
     public UserDto saveUser(UserDto userDto) {
         User userToSave = userDtoMapper.map(userDto);
         userToSave.setRegistrationDate(LocalDate.now());
