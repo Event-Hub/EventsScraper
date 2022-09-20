@@ -2,7 +2,9 @@
 package hub.event.users.testdata;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.Name;
+import hub.event.users.filter.FilterService;
+import hub.event.users.filter.dto.FilterDto;
+import hub.event.users.testdata.random.Random;
 import hub.event.users.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -25,9 +27,14 @@ public class SampleDataLoader implements CommandLineRunner {
     private final UserRepository repository;
     private final Faker faker;
 
-    public SampleDataLoader(UserRepository repository, Faker faker) {
+    private final Random random;
+    private final FilterService filterService;
+
+    public SampleDataLoader(UserRepository repository, Faker faker, Random random, FilterService filterService) {
         this.repository = repository;
         this.faker = faker;
+        this.random = random;
+        this.filterService = filterService;
     }
 
     @Override
@@ -38,6 +45,11 @@ public class SampleDataLoader implements CommandLineRunner {
                 .mapToObj(this::randomUser).toList();
 
         repository.saveAll(people);
+
+        IntStream.rangeClosed(1, 100)
+                .mapToObj(i -> random.randomFilter())
+                .forEach(filterService::saveFilter);
+
     }
 
 
@@ -54,12 +66,13 @@ public class SampleDataLoader implements CommandLineRunner {
         Date birthday = faker.date().birthday(13, 60);
         LocalDate localDateBirthday = covertDateToLocalDate(birthday);
 
-        return new User(null,name, email, localDateRegistration, localDateBirthday);
+
+        return new User(null, name, email, localDateRegistration, localDateBirthday);
 
     }
 
     private String getEmail(String firstName, String lastName) {
-        return firstName.toLowerCase() + "." + lastName.toLowerCase()  + "@gmail.com";
+        return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@gmail.com";
     }
 
     private LocalDate covertDateToLocalDate(Date registration) {

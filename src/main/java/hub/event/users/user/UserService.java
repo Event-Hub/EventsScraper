@@ -31,6 +31,7 @@ public class UserService {
         this.filterDtoMapper = filterDtoMapper;
     }
 
+    //Tested
     public Optional<UserDto> getUserById(Long id) {
         return userRepository.findById(id)
                 .map(userDtoMapper::map);
@@ -41,6 +42,7 @@ public class UserService {
                 .map(userDtoMapper::mapFull);
     }
 
+    //tested
     public Optional<UserDto> getUserByUserName(String username) {
         return userRepository.findByUsername(username)
                 .map(userDtoMapper::map);
@@ -50,12 +52,14 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .map(userDtoMapper::mapFull);
     }
+    //tested
     public UserDto saveUser(UserDto userDto) {
         User userToSave = userDtoMapper.map(userDto);
         userToSave.setRegistrationDate(LocalDate.now());
         User savedUser = userRepository.save(userToSave);
         return userDtoMapper.map(savedUser);
     }
+
 
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
@@ -67,7 +71,7 @@ public class UserService {
         return userDtoMapper.mapFull(savedUser);
     }
 
-
+    //Tested
     @Transactional
     public Optional<UserDto> updateUser(Long id, UserDto userDto) {
         return userRepository.findById(id)
@@ -75,11 +79,13 @@ public class UserService {
                 .map(userDtoMapper::map);
     }
 
+    //Tested
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
+    //Tested
     private User setEntityFields(UserDto source, User target) {
 
         if (source.getUsername() != null) {

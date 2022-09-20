@@ -106,7 +106,7 @@ class UserServiceTest {
     @Order(4)
     @Transactional
     @DisplayName("Test of updating user")
-    void updateUser() {
+    void updateUserTest() {
         //given
         UserDto givenUser = new UserDto(1L, "UpdatedName", "testUser1@gmail.com", LocalDate.of(2022, 7, 8), LocalDate.of(1999, 7, 8));
         //when
@@ -123,7 +123,7 @@ class UserServiceTest {
     @DisplayName("Test of deleting user")
     @Order(5)
 //    @Disabled
-    void deleteUser() {
+    void deleteUserTest() {
         //given
 
         //when
@@ -133,5 +133,29 @@ class UserServiceTest {
 
         //then
         assertTrue(userById.isEmpty());
+    }
+
+    @Test
+    @Disabled
+    void getUserByUserNameWithFiltersTest(){
+        fail("Not implemented");
+    }
+
+    @Test
+    @Disabled
+    void addFilterToUserTest(){
+        fail("Not implemented");
+    }
+
+    @Test
+    @Disabled
+    void getAllTest(){
+        fail("Not implemented");
+    }
+
+    @Test
+    @Disabled
+    void getAllWithFiltersTest(){
+        fail("Not implemented");
     }
 }

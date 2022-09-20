@@ -1,6 +1,8 @@
 package hub.event.users.testdata;
 
 import com.github.javafaker.Faker;
+import hub.event.users.testdata.random.FileReader;
+import hub.event.users.testdata.random.Random;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,5 +13,11 @@ class FakerConfiguration {
     @Bean
     public Faker faker() {
         return new Faker();
+    }
+
+    @Bean
+    public Random random(){
+        FileReader fileReader = new FileReader();
+        return new Random(fileReader);
     }
 }
