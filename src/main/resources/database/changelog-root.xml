@@ -13,8 +13,11 @@
   <include file="database/change/change_user_2.xml"/>
   <include file="database/change/change_filter_3.xml"/>
   <include file="database/test/test_user_data.xml" context="test"/>
+  <include file="database/test/test_filter_data.xml" context="test"/>
+
+<!--  Old data loads -->
 <!--  <include file="database/test/test_user_data.sql" context="test"/>-->
-  <include file="database/test/test_filter_data.sql" context="test"/>
+<!--  <include file="database/test/test_filter_data.sql" context="test"/>-->
 
 
 </databaseChangeLog>

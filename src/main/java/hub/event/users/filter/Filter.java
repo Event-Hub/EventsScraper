@@ -6,9 +6,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@SequenceGenerator(name = "FILTER_ID_SEQ", allocationSize = 1, initialValue = 1)
 public class Filter {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "FILTER_ID_SEQ", strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     private Long filterId;
     private Long cityId;
