@@ -5,10 +5,15 @@ import hub.event.users.user.dto.UserDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -148,9 +153,27 @@ class UserServiceTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("Test of getting all users data without filters")
+    @Order(6)
     void getAllTest(){
-        fail("Not implemented");
+        //given
+        UserDto givenUserDto = new UserDto(7L, "Lorina Anjanette", "lorina.anjanette@gmail.com",
+                LocalDate.of(2022, 3, 22), LocalDate.of(1979, 9, 18));
+
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        Page<UserDto> resultPage = userService.getAll(pageRequest);
+
+        long totalElements = resultPage.getTotalElements();
+        List<UserDto> userDtos = resultPage.toList();
+        int totalPages = resultPage.getTotalPages();
+
+        //then
+        assertAll(()->assertEquals(102,totalElements),
+                ()->assertEquals(11,totalPages),
+                ()->assertEquals(userDtos.get(5),givenUserDto)
+        );
     }
 
     @Test

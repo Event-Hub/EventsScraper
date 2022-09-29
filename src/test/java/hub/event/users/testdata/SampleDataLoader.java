@@ -3,8 +3,7 @@ package hub.event.users.testdata;
 
 import com.github.javafaker.Faker;
 import hub.event.users.filter.FilterService;
-import hub.event.users.filter.dto.FilterDto;
-import hub.event.users.testdata.random.Random;
+import hub.event.users.testdata.random.RandomFilter;
 import hub.event.users.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -27,13 +26,13 @@ public class SampleDataLoader implements CommandLineRunner {
     private final UserRepository repository;
     private final Faker faker;
 
-    private final Random random;
+    private final RandomFilter randomFilter;
     private final FilterService filterService;
 
-    public SampleDataLoader(UserRepository repository, Faker faker, Random random, FilterService filterService) {
+    public SampleDataLoader(UserRepository repository, Faker faker, RandomFilter randomFilter, FilterService filterService) {
         this.repository = repository;
         this.faker = faker;
-        this.random = random;
+        this.randomFilter = randomFilter;
         this.filterService = filterService;
     }
 
@@ -47,7 +46,7 @@ public class SampleDataLoader implements CommandLineRunner {
         repository.saveAll(people);
 
         IntStream.rangeClosed(1, 100)
-                .mapToObj(i -> random.randomFilter())
+                .mapToObj(i -> randomFilter.randomFilter())
                 .forEach(filterService::saveFilter);
 
     }

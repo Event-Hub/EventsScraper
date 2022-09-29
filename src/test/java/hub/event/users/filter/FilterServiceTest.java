@@ -37,9 +37,9 @@ class FilterServiceTest {
     @Order(1)
     void getFilterByIdTest() {
         //given
-        LocalDateTime fromHour = LocalDateTime.of(2022, 7, 19, 8, 40);
-        LocalDateTime toHour = LocalDateTime.of(2022, 11, 20, 20, 40);
-        FilterDto givenDto = new FilterDto(1L, 10L, 1L, "Warsaw Jazz", fromHour, toHour);
+        LocalDateTime fromHour = LocalDateTime.of(2021, 4, 15, 11, 29);
+        LocalDateTime toHour = LocalDateTime.of(2025, 5, 4, 14, 16);
+        FilterDto givenDto = new FilterDto(1L, 14L, 31L, "Biała Piska - Etno", fromHour, toHour);
 
         //when
         Optional<FilterDto> filterByIdOpt = filterService.getFilterById(1L);
@@ -64,7 +64,7 @@ class FilterServiceTest {
 
         //then
         assertAll(
-                () -> assertEquals(3,savedFilterDto.getFilterId()),
+                () -> assertEquals(101,savedFilterDto.getFilterId()),
                 () -> assertEquals(givenFilterDto.getCityId(),savedFilterDto.getCityId()),
                 () -> assertEquals(givenFilterDto.getUserId(),savedFilterDto.getUserId()),
                 () -> assertEquals(givenFilterDto.getName(),savedFilterDto.getName()),
@@ -79,9 +79,11 @@ class FilterServiceTest {
     @Order(3)
     void updateFilterTest() {
         //given
-        LocalDateTime fromHour = LocalDateTime.of(2022, 7, 19, 8, 40);
-        LocalDateTime toHour = LocalDateTime.of(2022, 11, 20, 20, 40);
-        FilterDto givenFilterDto = new FilterDto(1L, 20L, 1L, "Zakopane classic", fromHour, toHour);
+
+        LocalDateTime fromHour = LocalDateTime.of(2021, 4, 15, 11, 29);
+        LocalDateTime toHour = LocalDateTime.of(2025, 5, 4, 14, 16);
+        FilterDto givenFilterDto = new FilterDto(1L, 20L, 31L, "Zakopane classic", fromHour, toHour);
+
 
         //when
 

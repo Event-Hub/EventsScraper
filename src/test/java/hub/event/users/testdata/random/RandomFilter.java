@@ -7,12 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Random {
+public class RandomFilter {
 
     private final FileReader fileReader;
     private final List<String> musicTypes;
 
-    public Random(FileReader fileReader) {
+    public RandomFilter(FileReader fileReader) {
         this.fileReader = fileReader;
         musicTypes = Arrays.asList("Rock", "Pop", "Jazz | Blues", "Metal", "Elektro | Techno", "Recital | Poezja śpiewana", "Hip Hop | Rap", "Disco Polo", "Etno");
     }

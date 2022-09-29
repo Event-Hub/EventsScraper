@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest()
 @ActiveProfiles(profiles = {"prod", "test","faker"})
 @Disabled
-class RandomTest {
+class RandomFilterDataTest {
 
     @Test
     @Disabled
