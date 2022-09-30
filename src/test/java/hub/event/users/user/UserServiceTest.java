@@ -1,18 +1,20 @@
 package hub.event.users.user;
 
+import hub.event.users.filter.Filter;
 import hub.event.users.filter.FilterDtoMapper;
 import hub.event.users.user.dto.UserDto;
+import hub.event.users.user.dto.UserDtoFull;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +85,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of saving in database")
-    @Order(3)
+    @Order(4)
 //    @Disabled
     void saveUserTest() {
         //given
@@ -108,7 +110,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     @Transactional
     @DisplayName("Test of updating user")
     void updateUserTest() {
@@ -126,7 +128,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of deleting user")
-    @Order(5)
+    @Order(7)
 //    @Disabled
     void deleteUserTest() {
         //given
@@ -141,9 +143,38 @@ class UserServiceTest {
     }
 
     @Test
-    @Disabled
+    @DisplayName("Test of finding user by username with filters")
+    @Order(6)
+//    @Disabled
     void getUserByUserNameWithFiltersTest(){
-        fail("Not implemented");
+        //given
+//        3,Buster Cora,buster.cora@gmail.com,2022-07-20,1968-02-24
+        //        62,75,Ćmielów - Hip Hop | Rap,2020-07-13 00:46:00.000,2025-01-21 17:09:00.000,3
+//        88,32,Ślesin - Rock,2020-03-05 07:09:00.000,2024-12-02 07:02:00.000,3
+
+
+        List<Filter> filters = Arrays.asList(
+                new Filter(62L, 75L, 3L, "Ćmielów - Hip Hop | Rap",
+                        LocalDateTime.of(2020, 7, 13, 0, 46),
+                        LocalDateTime.of(2025, 1, 21, 17, 9)),
+                new Filter(88L, 32L, 3L, "Ślesin - Rock",
+                        LocalDateTime.of(2020, 3, 5, 7, 9),
+                        LocalDateTime.of(2024, 12, 2, 7, 2))
+        );
+
+
+        UserDtoFull given = new UserDtoFull(3L, "Buster Cora", "buster.cora@gmail.com",
+                LocalDate.of(2022, 7, 20),
+                LocalDate.of(1968, 2, 24),
+                filters);
+
+        //when
+        Optional<UserDtoFull> resultOptional = userService.getUserByUserNameWithFilters("Buster Cora");
+        UserDtoFull result = resultOptional.orElse(new UserDtoFull());
+
+        //then
+        assertEquals(given,result);
+
     }
 
     @Test
@@ -154,7 +185,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of getting all users data without filters")
-    @Order(6)
+    @Order(3)
     void getAllTest(){
         //given
         UserDto givenUserDto = new UserDto(7L, "Lorina Anjanette", "lorina.anjanette@gmail.com",
@@ -172,7 +203,7 @@ class UserServiceTest {
         //then
         assertAll(()->assertEquals(102,totalElements),
                 ()->assertEquals(11,totalPages),
-                ()->assertEquals(userDtos.get(5),givenUserDto)
+                ()->assertEquals(givenUserDto,userDtos.get(6))
         );
     }
 

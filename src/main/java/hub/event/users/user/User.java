@@ -1,13 +1,11 @@
 package hub.event.users.user;
 
-import java.util.List;
-
-import com.sun.istack.NotNull;
 import hub.event.users.filter.Filter;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,6 +25,7 @@ public class User {
     private LocalDate birthDate;
     @OneToMany
     @JoinColumn(name = "userId")
+    @BatchSize(size = 5)
     private List<Filter> filters;
 
 

@@ -2,6 +2,7 @@ package hub.event.users.user;
 
 // Auth comment left in comments to prevent auto delete during imports optimization
 //import hub.event.auth.AuthService;
+import hub.event.auth.AuthService;
 
 import hub.event.users.filter.Filter;
 import hub.event.users.filter.FilterDtoMapper;
@@ -9,12 +10,11 @@ import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,8 +48,9 @@ public class UserService {
                 .map(userDtoMapper::map);
     }
 
+    @Transactional
     public Optional<UserDtoFull> getUserByUserNameWithFilters(String username) {
-        return userRepository.findByUsername(username)
+        return Optional.of(userRepository.findByUsernameWithFilters(username))
                 .map(userDtoMapper::mapFull);
     }
     //tested
