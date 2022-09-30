@@ -2,6 +2,7 @@ package hub.event.users.user;
 
 import hub.event.users.filter.Filter;
 import hub.event.users.filter.FilterDtoMapper;
+import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
 import org.junit.jupiter.api.*;
@@ -36,6 +37,7 @@ class UserServiceTest {
 
     @Autowired
     private FilterDtoMapper filterDtoMapper;
+
 
     @BeforeEach
     void setUp() {
@@ -85,7 +87,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of saving in database")
-    @Order(4)
+    @Order(5)
 //    @Disabled
     void saveUserTest() {
         //given
@@ -110,7 +112,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     @Transactional
     @DisplayName("Test of updating user")
     void updateUserTest() {
@@ -128,7 +130,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of deleting user")
-    @Order(7)
+    @Order(8)
 //    @Disabled
     void deleteUserTest() {
         //given
@@ -144,9 +146,9 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Test of finding user by username with filters")
-    @Order(6)
+    @Order(7)
 //    @Disabled
-    void getUserByUserNameWithFiltersTest(){
+    void getUserByUserNameWithFiltersTest() {
         //given
 //        3,Buster Cora,buster.cora@gmail.com,2022-07-20,1968-02-24
         //        62,75,Ćmielów - Hip Hop | Rap,2020-07-13 00:46:00.000,2025-01-21 17:09:00.000,3
@@ -173,20 +175,34 @@ class UserServiceTest {
         UserDtoFull result = resultOptional.orElse(new UserDtoFull());
 
         //then
-        assertEquals(given,result);
+        assertEquals(given, result);
 
     }
 
     @Test
-    @Disabled
-    void addFilterToUserTest(){
-        fail("Not implemented");
+    @Order(10)
+    void addFilterToUserTest() {
+        //given
+
+        //when
+        Optional<UserDtoFull> userByIdWithFilters = userService.getUserByIdWithFilters(103L);
+
+        UserDtoFull userDtoFull = userService.addFilterToUser(103L,
+                new FilterDto(null, 20L, 103L, "Biecz - Jazz | Blues",
+                        LocalDateTime.of(2022, 6, 25, 15, 20),
+                        LocalDateTime.of(2022, 6, 26, 23, 50)));
+        //then
+        System.out.println("Filters of after adding");
+        System.out.println(userDtoFull.getFilters());
+        Optional<UserDtoFull> userByIdWithFilters1 = userService.getUserByIdWithFilters(103L);
+        System.out.println("Filters from database");
+        System.out.println( userByIdWithFilters1.orElse(new UserDtoFull()).getFilters());
     }
 
     @Test
     @DisplayName("Test of getting all users data without filters")
     @Order(3)
-    void getAllTest(){
+    void getAllTest() {
         //given
         UserDto givenUserDto = new UserDto(7L, "Lorina Anjanette", "lorina.anjanette@gmail.com",
                 LocalDate.of(2022, 3, 22), LocalDate.of(1979, 9, 18));
@@ -201,15 +217,69 @@ class UserServiceTest {
         int totalPages = resultPage.getTotalPages();
 
         //then
-        assertAll(()->assertEquals(102,totalElements),
-                ()->assertEquals(11,totalPages),
-                ()->assertEquals(givenUserDto,userDtos.get(6))
+        assertAll(() -> assertEquals(102, totalElements),
+                () -> assertEquals(11, totalPages),
+                () -> assertEquals(givenUserDto, userDtos.get(6))
+        );
+
+
+    }
+
+    @Test
+    @Order(4)
+//    @Disabled
+    @DisplayName("Test of getting all users which have filters with filters data")
+    void getAllWithFiltersTest() {
+
+        //given
+        List<Long> givenIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 11L, 13L);
+
+        List<Filter> givenFiltersForIdFour = Arrays.asList(
+                new Filter(24L, 70L, 4L, "Biecz - Jazz | Blues",
+                        LocalDateTime.of(2020, 3, 15, 7, 51),
+                        LocalDateTime.of(2024, 10, 19, 21, 38)),
+                new Filter(34L, 52L, 4L, "Szczawnica - Jazz | Blues",
+                        LocalDateTime.of(2020, 2, 7, 1, 20),
+                        LocalDateTime.of(2024, 3, 15, 6, 36))
+        );
+
+
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+
+        //Tested method call
+        Page<UserDtoFull> resultPage = userService.getAllWithFilters(pageRequest);
+
+        List<UserDtoFull> userDtoFulls = resultPage.toList();
+
+        Optional<UserDtoFull> userIdFourOptional = userDtoFulls.stream().filter(userDtoFull -> userDtoFull.getId() == 4L).findFirst();
+        UserDtoFull userIdFour = userIdFourOptional.orElse(new UserDtoFull());
+
+        List<Filter> resultFiltersForUserFour = null;
+        if (userIdFour.getId() == 4L) {
+            resultFiltersForUserFour = userIdFour.getFilters();
+        }
+
+        List<Long> fistPageIds = userDtoFulls.stream().map(UserDtoFull::getId).toList();
+
+        //then
+
+        List<Filter> finalResultFiltersForUserFour = resultFiltersForUserFour;
+        assertAll(
+                //Test if first page contains User with Id 4
+                () -> assertFalse(userIdFourOptional.isEmpty()),
+                //Test if first page user Ids match expected Ids
+                () -> assertEquals(givenIds, fistPageIds),
+                //Test if User with Id 4 has expected filters
+                () -> assertEquals(givenFiltersForIdFour, finalResultFiltersForUserFour)
         );
     }
 
     @Test
-    @Disabled
-    void getAllWithFiltersTest(){
-        fail("Not implemented");
+    @Order(9)
+    void experimentTest(){
+        Page<UserDto> all = userService.getAll(PageRequest.of(10, 10));
+        all.toList().forEach(System.out::println);
     }
 }

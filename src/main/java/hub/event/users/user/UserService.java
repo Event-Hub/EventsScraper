@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,8 +66,10 @@ public class UserService {
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
+        List<Filter> filters = userToSave.getFilters();
         Filter filter = filterDtoMapper.map(filterDto);
-        userToSave.getFilters().add(filter);
+        filters.add(filter);
+        userToSave.setFilters(filters);
 
         User savedUser = userRepository.save(userToSave);
         return userDtoMapper.mapFull(savedUser);
@@ -132,7 +135,7 @@ public class UserService {
     }
 
     public Page<UserDtoFull> getAllWithFilters(Pageable pageable) {
-        Page<User> allUsers = userRepository.findAll(pageable);
+        Page<User> allUsers = userRepository.findAllWithFilters(pageable);
         return allUsers.map(userDtoMapper::mapFull);
     }
 
