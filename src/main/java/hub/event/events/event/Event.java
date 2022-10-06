@@ -21,6 +21,8 @@ public class Event {
     @JoinColumn(name = "place_id")
     private Place place;
     private LocalDate eventDate;
+    // czy to jest jednorazowe wydarzenie? czy to jest okres?
+    // data zakończenia?
     private String title;
     private String description;
 

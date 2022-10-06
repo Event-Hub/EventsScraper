@@ -12,6 +12,7 @@ public class Place {
     private String name;
     private String street;
     private Integer number;
+    // jak jesteś ambitny to wprowadź jeszcze może geopointy czyli dane geograficzne (longitude, latitude)
 
     public Place() {
     }
