@@ -28,6 +28,7 @@ public class FilterService {
     }
 
     public FilterDto saveFilter(FilterDto filterDto) {
+        // filterDto.setFilterId(null);
         Filter filterToSave = filterDtoMapper.map(filterDto);
         Filter savedFilter = filterRepository.save(filterToSave);
         return filterDtoMapper.map(savedFilter);
@@ -36,6 +37,7 @@ public class FilterService {
     @Transactional
     public Optional<FilterDto> updateFilter(Long id, FilterDto filterDto) {
         return filterRepository.findById(id)
+//            .map(target -> target.setEntityFields(filterDto))
                 .map(target -> setEntityFields(filterDto, target))
                 .map(filterDtoMapper::map);
     }
@@ -45,6 +47,8 @@ public class FilterService {
         filterRepository.deleteById(id);
     }
 
+    // ta metoda raczej mogła by być wewnątrz Filter
+    // anemic model vs rich model
     private Filter setEntityFields(FilterDto source, Filter target) {
 
         if (source.getCityId() != null) {

@@ -43,6 +43,7 @@ class UserDtoMapper {
         dto.setEmail(user.getEmail());
         dto.setRegistrationDate(user.getRegistrationDate());
         dto.setBirthDate(user.getBirthDate());
+        // nie eksponuj encji
         dto.setFilters(user.getFilters());
 
         return dto;

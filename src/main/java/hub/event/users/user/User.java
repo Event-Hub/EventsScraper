@@ -20,6 +20,7 @@ public class User {
 
     private String email;
     @Column(name = "registration_date",columnDefinition = "DATE")
+    // Instant
     private LocalDate registrationDate;
     @Column(name = "birth_date",columnDefinition = "DATE")
     private LocalDate birthDate;

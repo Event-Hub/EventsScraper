@@ -1,5 +1,7 @@
 package hub.event.users.filter;
 
+import hub.event.users.filter.dto.FilterDto;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ public class Filter {
     @Column(nullable = false)
     private Long filterId;
     private Long cityId;
+
+    // @ManyToOne
     private Long userId;
     private String name;
     private LocalDateTime fromHour;

@@ -9,6 +9,7 @@ import hub.event.users.filter.FilterDtoMapper;
 import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,8 @@ public class UserService {
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
+        //userToSave.getFilters().size();
+        //Hibernate.initialize(userToSave.getFilters());
         List<Filter> filters = userToSave.getFilters();
         Filter filter = filterDtoMapper.map(filterDto);
         filters.add(filter);

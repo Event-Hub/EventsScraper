@@ -11,11 +11,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query("SELECT u FROM User u JOIN FETCH u.filters WHERE u.username = ?1")
+    // raczej do wywalenia
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.filters WHERE u.username = ?1")
     User findByUsernameWithFilters(String username);
 
 
-    @Query(value = "SELECT DISTINCT u FROM User u JOIN FETCH u.filters",
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.filters",
     countQuery = "SELECT COUNT(*) FROM User")
     Page<User> findAllWithFilters(Pageable pageable);
 }
