@@ -17,6 +17,14 @@ public class ScrapedEvent {
   private List<String> types;
   private SingleEventDateWithLocation singleEventDateWithLocation;
   private MultipleEventDateWithLocations multipleEventDateWithLocations;
+
+  // nowa klasa na powtarzający się event
+  // Period - od kiedy do kiedy
+  // List<Instant> - lista dat kiedy
+  // Interval - co ile się powtarza
+  // można na razie nie robić
+
+  // tu lepiej Instant
   private LocalDateTime scrapedTime;
 
   private ScrapedEvent(UUID uuid, String title, String description, String sourceLink,  SingleEventDateWithLocation singleEventDateWithLocation, MultipleEventDateWithLocations multipleEventDateWithLocations, LocalDateTime scrapedTime, Map<String, String> metadata, List<String> types) {

@@ -11,6 +11,8 @@ class EventDateWithLocation {
   private final LocalDate endDate;
   private final LocalTime startTime;
   private final LocalTime endTime;
+  // potrzebna dodatkowo strefa czasowa / zamień LocalDateTime na ZonedDateTime,
+  // chcemy wiedzieć dokładnie kiedy event się odbywa
 
   private final EventLocation eventLocation;
 

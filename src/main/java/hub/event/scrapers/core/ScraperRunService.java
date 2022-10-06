@@ -36,10 +36,13 @@ class ScraperRunService {
 //  @Scheduled(cron = "0 0 * * *")
   void start() {
     final Collection<ScraperConfig> scraperConfigs = scraperConfigRepository.allScraperConfigs();
-
-    final List<PageScraperPort> scrapersWithoutConfig = getScraperThatConfigNotFoundByConfigurationName(scraperConfigs);
-    for (PageScraperPort pageScraperPort : scrapersWithoutConfig) {
-      saveActiveConfigAndAppendToConfigList(pageScraperPort, scraperConfigs);
+    { // zamiast tego kodu można zrobić akcje która się dzieje po tym jak apka wstanie (register new scraper)
+      final List<PageScraperPort> scrapersWithoutConfig =
+          getScraperThatConfigNotFoundByConfigurationName(scraperConfigs);
+      for (PageScraperPort pageScraperPort : scrapersWithoutConfig) {
+        // raczej nie mutuj kolekcji, tylko zwróć nowy config którego potem wykorzystasz
+        saveActiveConfigAndAppendToConfigList(pageScraperPort, scraperConfigs);
+      }
     }
 
     final List<PageScraperPort> pageScrapersToRun = getActiveScrapersThatShouldBeRun(scraperConfigs);
@@ -49,6 +52,7 @@ class ScraperRunService {
     final List<ScrapedEvent> notDuplicateScrapedEvents = extractNotDuplicateScrapedEvents(analyzedEventCandidates);
     final List<AnalyzedEventCandidate> analyzedEventCandidateMarkedAsDuplicate = extractDuplicateScrapedEvents(analyzedEventCandidates);
 
+    // do przemyślenia czy w ogóle potrzebne
     final List<DuplicatedEventCandidate> duplicatedEventCandidates = mapAnalyzedEventCandidateToDuplicatedEventCandidate(analyzedEventCandidateMarkedAsDuplicate);
 
     if (!notDuplicateScrapedEvents.isEmpty()) {
@@ -70,6 +74,7 @@ class ScraperRunService {
         .toList();
 
     return pageScrapers.stream()
+        // filtruj w sqlu
         .filter(pageScraper -> !availableScraperConfigByName.contains(pageScraper.configurationName()))
         .toList();
   }
