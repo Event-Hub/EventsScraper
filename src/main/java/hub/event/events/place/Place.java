@@ -1,4 +1,4 @@
-package hub.event.events;
+package hub.event.events.place;
 
 import javax.persistence.*;
 import java.util.Objects;

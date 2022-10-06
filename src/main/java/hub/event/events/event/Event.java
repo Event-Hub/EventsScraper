@@ -1,4 +1,7 @@
-package hub.event.events;
+package hub.event.events.event;
+
+import hub.event.events.city.City;
+import hub.event.events.place.Place;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,7 +20,6 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "place_id")
     private Place place;
-    @Column(columnDefinition = "date")
     private LocalDate eventDate;
     private String title;
     private String description;
