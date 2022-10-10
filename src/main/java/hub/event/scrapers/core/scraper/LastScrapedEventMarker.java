@@ -1,20 +1,20 @@
-package hub.event.scrapers.core;
+package hub.event.scrapers.core.scraper;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 public class LastScrapedEventMarker {
   private final String scraperConfigurationName;
-  private final LocalDateTime runDateTime;
+  private final Instant runDateTime;
   private final String eventTitle;
   private final String marker;
   private final boolean complete;
 
-  public LastScrapedEventMarker(String scraperConfigurationName, LocalDateTime runDateTime, String eventTitle, String marker) {
+  public LastScrapedEventMarker(String scraperConfigurationName, Instant runDateTime, String eventTitle, String marker) {
     this(scraperConfigurationName, runDateTime, eventTitle,marker,false);
   }
 
-  public LastScrapedEventMarker(String scraperConfigurationName, LocalDateTime runDateTime, String eventTitle, String marker, boolean complete) {
+  public LastScrapedEventMarker(String scraperConfigurationName, Instant runDateTime, String eventTitle, String marker, boolean complete) {
     this.scraperConfigurationName = scraperConfigurationName;
     this.runDateTime = runDateTime;
     this.eventTitle = eventTitle;
@@ -26,7 +26,7 @@ public class LastScrapedEventMarker {
     return scraperConfigurationName;
   }
 
-  public LocalDateTime runDateTime() {
+  public Instant runDateTime() {
     return runDateTime;
   }
 

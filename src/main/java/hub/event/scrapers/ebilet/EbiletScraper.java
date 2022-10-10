@@ -6,14 +6,10 @@ import hub.event.scrapers.core.ScrapedEvent;
 import java.util.Collection;
 import java.util.Collections;
 
-class EbiletScraper implements PageScraperPort {
-  @Override
-  public String configurationName() {
-    return null;
-  }
+class EbiletScraper extends PageScraperPort {
 
   @Override
-  public Collection<ScrapedEvent> scrap() {
+  protected Collection<ScrapedEvent> scrap() {
     return Collections.emptyList();
   }
 }

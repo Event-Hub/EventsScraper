@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -19,13 +20,14 @@ class MultipleEventDateWithLocationsTest {
     final String city = "Thessia";
     final String address= "Nightmare Street 102/34";
     final String locationName = "Black hole mirror club";
-    final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(date, time, city, address, locationName);
+    final ZoneId timeZone = ZoneId.systemDefault();
+    final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(date, time, timeZone, city, address, locationName);
 
     assertThatExceptionOfType(EventDateInPastException.class)
-        .isThrownBy(() -> MultipleEventDateWithLocations.create(dateInPast, time, city, address, locationName));
+        .isThrownBy(() -> MultipleEventDateWithLocations.create(dateInPast, time, timeZone, city, address, locationName));
 
     assertThatExceptionOfType(EventDateInPastException.class)
-        .isThrownBy(() -> multipleEventDateWithLocations.add(dateInPast, time, city, address, locationName));
+        .isThrownBy(() -> multipleEventDateWithLocations.add(dateInPast, time, timeZone, city, address, locationName));
   }
 
   @Test
@@ -43,15 +45,15 @@ class MultipleEventDateWithLocationsTest {
     final String locationName = "Black hole mirror club";
 
     Assertions.assertThatNoException().isThrownBy(() -> {
-      MultipleEventDateWithLocations multipleDate = MultipleEventDateWithLocations.create(date1, time1, city1, address, locationName)
-          .add(date2, time2, city2, address, locationName)
-          .add(date3, time3, city3, address, locationName);
+      MultipleEventDateWithLocations multipleDate = MultipleEventDateWithLocations.create(date1, time1, ZoneId.systemDefault(), city1, address, locationName)
+          .add(date2, time2, ZoneId.systemDefault(), city2, address, locationName)
+          .add(date3, time3, ZoneId.systemDefault(), city3, address, locationName);
 
       assertThat(multipleDate).isNotNull();
 
       assertThat(multipleDate.eventDateWithLocations()).isNotNull()
           .hasSize(3)
-          .extracting(EventDateWithLocation::startDate, EventDateWithLocation::startTime, EventDateWithLocation::city, EventDateWithLocation::address, EventDateWithLocation::locationName)
+          .extracting(EventDateWithLocation::startDate, EventDateWithLocation::startTime,  EventDateWithLocation::city, EventDateWithLocation::address, EventDateWithLocation::locationName)
           .contains(tuple(date1, time1, city1, address, locationName),
               tuple(date2, time2, city2, address, locationName),
               tuple(date3, time3, city3, address, locationName)

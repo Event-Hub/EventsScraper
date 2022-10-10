@@ -1,5 +1,7 @@
 package hub.event.scrapers.core;
 
+import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
+
 import java.util.List;
 import java.util.Optional;
 

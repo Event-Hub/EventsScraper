@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,14 +28,15 @@ class SingleEventDateWithLocationTest {
       final String city = "Thessia";
       final String address = "Nightmare Street 102/34";
       final String locationName = "Black hole mirror club";
+      final ZoneId timeZone = ZoneId.systemDefault();
 
-      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, incorrectEndDate, correctEndTime, city, address, locationName));
-      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, correctEndDate, incorrectEndTime, city, address, locationName));
+      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, incorrectEndDate, correctEndTime, timeZone, city, address, locationName));
+      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, correctEndDate, incorrectEndTime, timeZone, city, address, locationName));
 
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDateInPast, startTime, city, address, locationName));
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDateInPast, startTime, correctEndDate, correctEndTime, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDateInPast, startTime, timeZone, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDateInPast, startTime, correctEndDate, correctEndTime, timeZone, city, address, locationName));
 
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, endDateInPast, correctEndTime, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.single(startDate, startTime, endDateInPast, correctEndTime, timeZone, city, address, locationName));
     }
 
     @Test
@@ -46,9 +48,10 @@ class SingleEventDateWithLocationTest {
       final String city = "Thessia";
       final String address = "Nightmare Street 102/34";
       final String locationName = "Black hole mirror club";
+      final ZoneId timeZone = ZoneId.systemDefault();
 
       assertDoesNotThrow(() -> {
-        SingleEventDateWithLocation singleDateContainsStartDateAndTime = SingleEventDateWithLocation.single(startDate, startTime, city, address, locationName);
+        SingleEventDateWithLocation singleDateContainsStartDateAndTime = SingleEventDateWithLocation.single(startDate, startTime, timeZone, city, address, locationName);
         assertNotNull(singleDateContainsStartDateAndTime);
 
         assertEquals(startDate, singleDateContainsStartDateAndTime.startDate());
@@ -64,7 +67,7 @@ class SingleEventDateWithLocationTest {
       });
 
       assertDoesNotThrow(() -> {
-        SingleEventDateWithLocation fullEventDate = SingleEventDateWithLocation.single(startDate, startTime, endDate, endTime, city, address, locationName);
+        SingleEventDateWithLocation fullEventDate = SingleEventDateWithLocation.single(startDate, startTime, endDate, endTime, timeZone, city, address, locationName);
         assertNotNull(fullEventDate);
 
         assertEquals(startDate, fullEventDate.startDate());
@@ -96,13 +99,14 @@ class SingleEventDateWithLocationTest {
       final String city = "Thessia";
       final String address = "Nightmare Street 102/34";
       final String locationName = "Black hole mirror club";
+      final ZoneId timeZone = ZoneId.systemDefault();
 
-      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, incorrectEndDate, correctEndTime, city, address, locationName));
-      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, correctEndDate, incorrectEndTime, city, address, locationName));
+      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, incorrectEndDate, correctEndTime, timeZone, city, address, locationName));
+      assertThrows(EventDateEndDateTimeBeforeStartDateTimeException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, correctEndDate, incorrectEndTime, timeZone, city, address, locationName));
 
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDateInPast, startTime, correctEndDate, city, address, locationName));
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDateInPast, startTime, correctEndDate, correctEndTime, city, address, locationName));
-      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, endDateInPast, correctEndTime, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDateInPast, startTime, correctEndDate, timeZone, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDateInPast, startTime, correctEndDate, correctEndTime, timeZone, city, address, locationName));
+      assertThrows(EventDateInPastException.class, () -> SingleEventDateWithLocation.period(startDate, startTime, endDateInPast, correctEndTime, timeZone, city, address, locationName));
     }
 
 
@@ -115,9 +119,10 @@ class SingleEventDateWithLocationTest {
       final String city = "Thessia";
       final String address = "Nightmare Street 102/34";
       final String locationName = "Black hole mirror club";
+      final ZoneId timeZone = ZoneId.systemDefault();
 
       assertDoesNotThrow(() -> {
-        SingleEventDateWithLocation periodDateContainsStartDateAndTime = SingleEventDateWithLocation.period(startDate, startTime, endDate, city, address, locationName);
+        SingleEventDateWithLocation periodDateContainsStartDateAndTime = SingleEventDateWithLocation.period(startDate, startTime, endDate, timeZone, city, address, locationName);
 
         assertNotNull(periodDateContainsStartDateAndTime);
 
@@ -133,7 +138,7 @@ class SingleEventDateWithLocationTest {
       });
 
       assertDoesNotThrow(() -> {
-        SingleEventDateWithLocation fullEventDate = SingleEventDateWithLocation.period(startDate, startTime, endDate, endTime, city, address, locationName);
+        SingleEventDateWithLocation fullEventDate = SingleEventDateWithLocation.period(startDate, startTime, endDate, endTime, timeZone, city, address, locationName);
 
         assertNotNull(fullEventDate);
 

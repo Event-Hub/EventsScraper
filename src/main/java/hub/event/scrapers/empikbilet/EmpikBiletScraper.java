@@ -5,16 +5,12 @@ import hub.event.scrapers.core.ScrapedEvent;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
-class EmpikBiletScraper implements PageScraperPort {
-  @Override
-  public String configurationName() {
-    return null;
-  }
+class EmpikBiletScraper extends PageScraperPort {
+
 
   @Override
-  public Collection<ScrapedEvent> scrap() {
+  protected Collection<ScrapedEvent> scrap() {
     return Collections.emptyList();
   }
 }

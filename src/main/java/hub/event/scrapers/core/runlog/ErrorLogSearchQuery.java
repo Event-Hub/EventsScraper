@@ -1,16 +1,16 @@
 package hub.event.scrapers.core.runlog;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
-public class ErrorLogSearchCommand {
+public class ErrorLogSearchQuery {
   private final List<String> configurationNames;
-  private final LocalDateTime fromDate;
-  private final LocalDateTime toDate;
+  private final Instant fromDate;
+  private final Instant toDate;
   private final List<String> errorCodes;
   private final String description;
 
-  public ErrorLogSearchCommand(List<String> configurationNames, LocalDateTime fromDate, LocalDateTime toDate, List<String> errorCodes, String description) {
+  public ErrorLogSearchQuery(List<String> configurationNames, Instant fromDate, Instant toDate, List<String> errorCodes, String description) {
     this.configurationNames = configurationNames;
     this.fromDate = fromDate;
     this.toDate = toDate;
@@ -22,11 +22,11 @@ public class ErrorLogSearchCommand {
     return configurationNames;
   }
 
-  LocalDateTime fromDate() {
+  Instant fromDate() {
     return fromDate;
   }
 
-  LocalDateTime toDate() {
+  Instant toDate() {
     return toDate;
   }
 

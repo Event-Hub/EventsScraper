@@ -1,6 +1,6 @@
-package hub.event.scrapers.core.entityrepository;
+package hub.event.scrapers.core;
 
-import hub.event.scrapers.core.LastScrapedEventMarker;
+import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -9,7 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,8 +32,8 @@ class LastScrapedEventMarkerRepositoryTest {
   @Test
   void saveTest() {
     //given
-    LastScrapedEventMarker eventMarker1 = new LastScrapedEventMarker("config1", LocalDateTime.now(), "title1", "marker1");
-    LastScrapedEventMarker eventMarker2 = new LastScrapedEventMarker("config2", LocalDateTime.now(), "title2", "marker2");
+    LastScrapedEventMarker eventMarker1 = new LastScrapedEventMarker("config1", LocalDateTime.now().toInstant(ZoneOffset.UTC), "title1", "marker1");
+    LastScrapedEventMarker eventMarker2 = new LastScrapedEventMarker("config2", LocalDateTime.now().toInstant(ZoneOffset.UTC), "title2", "marker2");
 
 
     //then
@@ -73,7 +75,7 @@ class LastScrapedEventMarkerRepositoryTest {
   void whenFindByExistsScraperConfigurationNameThenReturnMarker() {
     //given
     final String scraperConfigurationName = "exists_scraper";
-    final LocalDateTime localDateTime = LocalDateTime.now();
+    final Instant localDateTime = LocalDateTime.now().toInstant(ZoneOffset.UTC);
 
     final LastScrapedEventMarkerEntity lastScrapedEventMarkerEntity = new LastScrapedEventMarkerEntity();
     lastScrapedEventMarkerEntity.setMarker("maker1");

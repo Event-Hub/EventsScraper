@@ -3,17 +3,14 @@ package hub.event.scrapers.core;
 import hub.event.scrapers.core.datewithlocation.MultipleEventDateWithLocations;
 import hub.event.scrapers.core.datewithlocation.SingleEventDateWithLocation;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class ScrapedEvent {
 
-  private UUID uuid;
   private Map<String, String> metadata;
   private String title;
   private String description;
   private String sourceLink;
-
   private List<String> types;
   private SingleEventDateWithLocation singleEventDateWithLocation;
   private MultipleEventDateWithLocations multipleEventDateWithLocations;
@@ -24,11 +21,7 @@ public class ScrapedEvent {
   // Interval - co ile się powtarza
   // można na razie nie robić
 
-  // tu lepiej Instant
-  private LocalDateTime scrapedTime;
-
-  private ScrapedEvent(UUID uuid, String title, String description, String sourceLink,  SingleEventDateWithLocation singleEventDateWithLocation, MultipleEventDateWithLocations multipleEventDateWithLocations, LocalDateTime scrapedTime, Map<String, String> metadata, List<String> types) {
-    this.uuid = uuid;
+  private ScrapedEvent(String title, String description, String sourceLink, SingleEventDateWithLocation singleEventDateWithLocation, MultipleEventDateWithLocations multipleEventDateWithLocations, Map<String, String> metadata, List<String> types) {
     this.metadata = metadata;
     this.title = title;
     this.description = description;
@@ -36,14 +29,17 @@ public class ScrapedEvent {
     this.types = types;
     this.singleEventDateWithLocation = singleEventDateWithLocation;
     this.multipleEventDateWithLocations = multipleEventDateWithLocations;
-    this.scrapedTime = scrapedTime;
   }
 
   private ScrapedEvent() {
   }
 
-  public static ScrapedEventBuilder builder() {
-    return new ScrapedEventBuilder();
+  public static ScrapedEventBuilder builder(SingleEventDateWithLocation singleEventDateWithLocation) {
+    return new ScrapedEventBuilder(singleEventDateWithLocation);
+  }
+
+  public static ScrapedEventBuilder builder(MultipleEventDateWithLocations multipleEventDateWithLocations) {
+    return new ScrapedEventBuilder(multipleEventDateWithLocations);
   }
 
   String title() {
@@ -70,24 +66,15 @@ public class ScrapedEvent {
     return multipleEventDateWithLocations;
   }
 
-  LocalDateTime scrapedTime() {
-    return scrapedTime;
-  }
-
   boolean hasMultipleDateAndLocations() {
     return Objects.nonNull(multipleEventDateWithLocations);
-  }
-
-  UUID uuid() {
-    return uuid;
   }
 
   List<String> types() {
     return types;
   }
 
-  static class ScrapedEventBuilder {
-
+  public static class ScrapedEventBuilder {
     private final Map<String, String> metadata;
     private final List<String> types;
     private String title;
@@ -95,11 +82,20 @@ public class ScrapedEvent {
     private String sourceLink;
     private SingleEventDateWithLocation singleEventDateWithLocation;
     private MultipleEventDateWithLocations multipleEventDateWithLocations;
-    private LocalDateTime scrapedTime;
 
-    ScrapedEventBuilder() {
+    private ScrapedEventBuilder() {
       this.metadata = new HashMap<>();
       this.types = new ArrayList<>();
+    }
+
+    private ScrapedEventBuilder(SingleEventDateWithLocation singleEventDateWithLocation) {
+      this();
+      this.singleEventDateWithLocation = singleEventDateWithLocation;
+    }
+
+    public ScrapedEventBuilder(MultipleEventDateWithLocations multipleEventDateWithLocations) {
+      this();
+      this.multipleEventDateWithLocations = multipleEventDateWithLocations;
     }
 
     public ScrapedEventBuilder title(String title) {
@@ -121,34 +117,13 @@ public class ScrapedEvent {
       this.metadata.put(key, value);
       return this;
     }
-
-    public ScrapedEventBuilder date(SingleEventDateWithLocation singleEventDateWithLocation) {
-      if (Objects.isNull(multipleEventDateWithLocations)) {
-        this.singleEventDateWithLocation = singleEventDateWithLocation;
-      }
-
-      return this;
-    }
-
-    public ScrapedEventBuilder date(MultipleEventDateWithLocations multipleEventDateWithLocations) {
-      this.singleEventDateWithLocation = null;
-      this.multipleEventDateWithLocations = multipleEventDateWithLocations;
-      return this;
-    }
-
-    public ScrapedEventBuilder scrapedTime(LocalDateTime scrapedTime) {
-      this.scrapedTime = scrapedTime;
-      return this;
-    }
-
     public ScrapedEventBuilder type(String type) {
       this.types.add(type);
       return this;
     }
 
     public ScrapedEvent build() {
-      final UUID eventUuid = UUID.randomUUID();
-      return new ScrapedEvent(eventUuid, title, description, sourceLink, singleEventDateWithLocation, multipleEventDateWithLocations, scrapedTime, metadata, types);
+      return new ScrapedEvent(title, description, sourceLink, singleEventDateWithLocation, multipleEventDateWithLocations, metadata, types);
     }
   }
 }

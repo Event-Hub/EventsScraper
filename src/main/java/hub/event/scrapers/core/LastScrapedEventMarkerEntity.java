@@ -1,62 +1,65 @@
-package hub.event.scrapers.core.entityrepository;
+package hub.event.scrapers.core;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
+import javax.persistence.IdClass;
+import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
-class LastScrapedEventMarkerEntity {
+@IdClass(LastScrapedEventMarkerEntity.class)
+class LastScrapedEventMarkerEntity implements Serializable {
   @Id
   private String scraperConfigurationName;
   @Column(nullable = false)
-  private LocalDateTime runDateTime;
+  private Instant runDateTime;
   private String eventTitle;
   @Column(nullable = false)
   private String marker;
-  @Column(nullable = false)
+  @Id
   private Boolean complete;
 
   LastScrapedEventMarkerEntity() {
   }
 
-  public String getScraperConfigurationName() {
+  String getScraperConfigurationName() {
     return scraperConfigurationName;
   }
 
-  public void setScraperConfigurationName(String scraperConfigurationName) {
+  void setScraperConfigurationName(String scraperConfigurationName) {
     this.scraperConfigurationName = scraperConfigurationName;
   }
 
-  public LocalDateTime getRunDateTime() {
+  Instant getRunDateTime() {
     return runDateTime;
   }
 
-  public void setRunDateTime(LocalDateTime runDateTime) {
+  void setRunDateTime(Instant runDateTime) {
     this.runDateTime = runDateTime;
   }
 
-  public String getEventTitle() {
+  String getEventTitle() {
     return eventTitle;
   }
 
-  public void setEventTitle(String eventTitle) {
+  void setEventTitle(String eventTitle) {
     this.eventTitle = eventTitle;
   }
 
-  public String getMarker() {
+  String getMarker() {
     return marker;
   }
 
-  public void setMarker(String marker) {
+  void setMarker(String marker) {
     this.marker = marker;
   }
 
-  public Boolean getComplete() {
+  Boolean getComplete() {
     return complete;
   }
 
-  public void setComplete(Boolean complete) {
+  void setComplete(Boolean complete) {
     this.complete = complete;
   }
 }

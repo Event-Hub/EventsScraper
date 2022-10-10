@@ -7,8 +7,8 @@ import hub.event.scrapers.core.exceptions.EventDateInPastException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,19 +25,19 @@ class ScrapedEventBuilderTest {
     final String location = "Blue Bar";
     final String description = "example description";
     final Map<String, String> metadata = Map.of("MetaKey1", "MetaValue1", "MetaKey2", "MetaValue2", "MetaKey3", "MetaValue3");
-    final LocalDateTime scrapedTime = LocalDateTime.of(2022, 8, 21, 10, 0);
 
-    final LocalDate startDate = LocalDate.of(2022, 10, 12);
+    final LocalDate startDate = LocalDate.now().plusDays(2);
     final LocalTime startTime = LocalTime.of(14, 0);
-    final LocalDate endDate = LocalDate.of(2022, 10, 16);
+    final LocalDate endDate = LocalDate.now().plusDays(4);
     final LocalTime endTime = LocalTime.of(22, 30);
+    final ZoneId timeZone = ZoneId.systemDefault();
 
-    final SingleEventDateWithLocation singleEventDateWithLocation = SingleEventDateWithLocation.period(startDate, startTime, endDate, endTime, city, address, location);
+    final SingleEventDateWithLocation singleEventDateWithLocation = SingleEventDateWithLocation.period(startDate, startTime, endDate, endTime, timeZone, city, address, location);
 
-    final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(startDate, startTime, city, address, location);
+    final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(startDate, startTime, timeZone, city, address, location);
 
     //then
-    ScrapedEvent scrapedEvent1 = ScrapedEvent.builder()
+    ScrapedEvent scrapedEvent1 = ScrapedEvent.builder(singleEventDateWithLocation)
         .title(title)
         .description(description)
         .sourceLink(sourceLink)
@@ -46,30 +46,16 @@ class ScrapedEventBuilderTest {
         .metadata("MetaKey3", "MetaValue3")
         .type("Inline Skating")
         .type("Skating Workshops")
-        .date(singleEventDateWithLocation)
-        .scrapedTime(scrapedTime)
         .build();
 
-    ScrapedEvent scrapedEvent2 = ScrapedEvent.builder()
+    ScrapedEvent scrapedEvent2 = ScrapedEvent.builder(multipleEventDateWithLocations)
         .title(title)
         .description(description)
         .sourceLink(sourceLink)
-        .date(multipleEventDateWithLocations)
-        .scrapedTime(scrapedTime)
-        .build();
-
-    ScrapedEvent scrapedEvent3 = ScrapedEvent.builder()
-        .title(title)
-        .description(description)
-        .sourceLink(sourceLink)
-        .date(multipleEventDateWithLocations)
-        .date(singleEventDateWithLocation)
-        .scrapedTime(scrapedTime)
         .build();
 
     assertNotNull(scrapedEvent1);
     assertNotNull(scrapedEvent2);
-    assertNotNull(scrapedEvent3);
 
     assertEquals(title, scrapedEvent1.title());
     assertEquals(description, scrapedEvent1.description());
@@ -80,16 +66,12 @@ class ScrapedEventBuilderTest {
     assertTrue(scrapedEvent1.types().contains("Skating Workshops"));
     assertEquals(singleEventDateWithLocation, scrapedEvent1.singleEventDateWithLocation());
     assertNull(scrapedEvent1.multipleEventDateWithLocations());
-    assertEquals(scrapedTime, scrapedEvent1.scrapedTime());
     assertFalse(scrapedEvent1.hasMultipleDateAndLocations());
 
     assertEquals(multipleEventDateWithLocations, scrapedEvent2.multipleEventDateWithLocations());
     assertNull(scrapedEvent2.singleEventDateWithLocation());
     assertTrue(scrapedEvent2.hasMultipleDateAndLocations());
 
-    assertEquals(multipleEventDateWithLocations, scrapedEvent3.multipleEventDateWithLocations());
-    assertNull(scrapedEvent3.singleEventDateWithLocation());
-    assertTrue(scrapedEvent3.hasMultipleDateAndLocations());
   }
 
 }

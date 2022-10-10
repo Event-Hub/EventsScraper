@@ -1,10 +1,9 @@
-package hub.event.scrapers.core.entityrepository;
+package hub.event.scrapers.core;
 
-import hub.event.scrapers.core.LastScrapedEventMarker;
-import hub.event.scrapers.core.LastScrapedEventMarkerRepository;
+import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +22,12 @@ class LastScrapedEventMarkerEntityRepository implements LastScrapedEventMarkerRe
 
   @Override
   public void drop(LastScrapedEventMarker lastScrapedEventMarker) {
-
+    lastScrapedEventMarkerJpaRepository.deleteById(lastScrapedEventMarker.scraperConfigurationName());
   }
 
   @Override
   public void makeDraftActive(List<String> configurationNameList) {
-
+    lastScrapedEventMarkerJpaRepository.updateSetAllActiveById(configurationNameList);
   }
 
   public Optional<LastScrapedEventMarker> findByScraperConfigurationName(String configurationName, boolean complete) {
@@ -47,11 +46,12 @@ class LastScrapedEventMarkerEntityRepository implements LastScrapedEventMarkerRe
 
   private LastScrapedEventMarker mapToMaker(LastScrapedEventMarkerEntity lastScrapedEventMarkerEntity) {
     final String marker = lastScrapedEventMarkerEntity.getMarker();
-    final LocalDateTime date = lastScrapedEventMarkerEntity.getRunDateTime();
+    final Instant date = lastScrapedEventMarkerEntity.getRunDateTime();
     final String title = lastScrapedEventMarkerEntity.getEventTitle();
     final String configurationName = lastScrapedEventMarkerEntity.getScraperConfigurationName();
     final Boolean isComplete = lastScrapedEventMarkerEntity.getComplete();
 
     return new LastScrapedEventMarker(configurationName, date, title, marker, isComplete);
   }
+
 }

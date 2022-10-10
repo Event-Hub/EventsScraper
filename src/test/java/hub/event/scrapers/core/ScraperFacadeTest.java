@@ -1,6 +1,7 @@
 package hub.event.scrapers.core;
 
 import hub.event.scrapers.core.exceptions.ScraperConfigurationByNameNotExists;
+import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,10 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.ZoneId;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -42,7 +41,7 @@ class ScraperFacadeTest {
       scraperFacade.activateScraperByConfigurationName(scraperName);
 
       verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository).create(scraperName, true);
+      verify(scraperConfigRepository).create(scraperName, ZoneId.systemDefault(), true);
       verify(scraperConfigRepository, never()).activate(scraperName);
     }
 
@@ -56,7 +55,7 @@ class ScraperFacadeTest {
       scraperFacade.activateScraperByConfigurationName(scraperName);
 
       verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository, never()).create(scraperName, true);
+      verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
       verify(scraperConfigRepository).activate(scraperName);
     }
 
@@ -70,7 +69,7 @@ class ScraperFacadeTest {
       assertThrows(ScraperConfigurationByNameNotExists.class, () -> scraperFacade.deactivateScraperByConfigurationName(scraperName));
 
       verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository, never()).create(scraperName, true);
+      verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
       verify(scraperConfigRepository, never()).deactivate(scraperName);
     }
 
@@ -84,76 +83,9 @@ class ScraperFacadeTest {
       assertDoesNotThrow(() -> scraperFacade.deactivateScraperByConfigurationName(scraperName));
 
       verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository, never()).create(scraperName, true);
+      verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
       verify(scraperConfigRepository).deactivate(scraperName);
     }
   }
 
-  @Nested
-  class LastScrapedEventMarkerTest {
-    @Test
-    void whenFoundLastScrapedEventMarkerThenReturnNotEmptyOptional() {
-      //given
-      final String scraperName = "scm4";
-      final LastScrapedEventMarker lastScrapedEventMarker = new LastScrapedEventMarker(scraperName, LocalDateTime.now().minusDays(2), "Event Title", "Marker", false);
-      //when
-      when(lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperName, true))
-          .thenReturn(Optional.of(lastScrapedEventMarker));
-      //then
-
-      assertDoesNotThrow(() -> {
-        final Optional<LastScrapedEventMarker> lastScrapedEventMarkerResult = scraperFacade.lastScrapedEventMarkerByConfigurationName(scraperName);
-        assertThat(lastScrapedEventMarkerResult)
-            .isNotEmpty()
-            .get()
-            .isEqualTo(lastScrapedEventMarker);
-      });
-
-      verify(lastScrapedEventMarkerRepository).findByScraperConfigurationName(scraperName, true);
-    }
-
-    @Test
-    void whenNotFoundLastScrapedEventMarkerThenReturnOptionalEmpty() {
-      //given
-      final String scraperName = "scm5";
-      //when
-      when(lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperName, true))
-          .thenReturn(Optional.empty());
-      //then
-
-      assertDoesNotThrow(() -> {
-        final Optional<LastScrapedEventMarker> lastScrapedEventMarkerResult = scraperFacade.lastScrapedEventMarkerByConfigurationName(scraperName);
-        assertThat(lastScrapedEventMarkerResult)
-            .isEmpty();
-      });
-
-      verify(lastScrapedEventMarkerRepository).findByScraperConfigurationName(scraperName, true);
-    }
-
-    @Test
-    void whenCreateLastScrapedEventMarkerThenReplaceNotCompleteOne() {
-      //given
-      final String scraperConfigurationName = "name1";
-      final LocalDateTime runTime = LocalDateTime.now();
-
-      final LastScrapedEventMarker previousLastScrapedEventMarker = new LastScrapedEventMarker(scraperConfigurationName, runTime.minusDays(1), "Title 1", "Marker", false);
-      final LastScrapedEventMarker newLastScrapedEventMarker = new LastScrapedEventMarker(scraperConfigurationName, runTime, "Title 2", "Marker 2", false);
-
-      //when
-      when(lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName, false))
-          .thenReturn(Optional.of(previousLastScrapedEventMarker));
-
-      //then
-      scraperFacade.saveLastScrapedEventMarker(scraperConfigurationName, runTime, newLastScrapedEventMarker.eventTitle(), newLastScrapedEventMarker.marker());
-
-      verify(lastScrapedEventMarkerRepository).findByScraperConfigurationName(scraperConfigurationName, false);
-      verify(lastScrapedEventMarkerRepository).drop(previousLastScrapedEventMarker);
-
-      verify(lastScrapedEventMarkerRepository).store(lastScrapedEventMarkerArgumentCaptor.capture());
-
-      assertThat(lastScrapedEventMarkerArgumentCaptor.getValue())
-          .isEqualTo(newLastScrapedEventMarker);
-
-    }
-  }
 }

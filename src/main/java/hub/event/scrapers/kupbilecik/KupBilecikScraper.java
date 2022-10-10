@@ -7,16 +7,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 
-class KupBilecikScraper implements PageScraperPort {
+class KupBilecikScraper extends PageScraperPort {
 
 
   @Override
-  public String configurationName() {
-    return null;
-  }
-
-  @Override
-  public Collection<ScrapedEvent> scrap() {
+  protected Collection<ScrapedEvent> scrap() {
     return Collections.emptyList();
   }
 }
