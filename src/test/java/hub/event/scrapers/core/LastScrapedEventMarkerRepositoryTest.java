@@ -1,6 +1,7 @@
 package hub.event.scrapers.core;
 
 import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,12 +23,14 @@ import static org.mockito.Mockito.*;
 class LastScrapedEventMarkerRepositoryTest {
 
   @Mock
-  private LastScrapedEventMarkerJpaRepository lastScrapedEventMarkerEntityRepository;
+  private JpaLastScrapedEventMarkerRepository lastScrapedEventMarkerEntityRepository;
+  @Mock
+  private ScraperIdNameCache scraperIdNameCache;
   @InjectMocks
-  private LastScrapedEventMarkerEntityRepository lastScrapedEventMarkerRepository;
+  private LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
 
   @Captor
-  ArgumentCaptor<LastScrapedEventMarkerEntity> lastScrapedEventMarkerEntityCaptor;
+  ArgumentCaptor<EntityLastScrapedEventMarker> lastScrapedEventMarkerEntityCaptor;
 
   @Test
   void saveTest() {
@@ -35,6 +38,9 @@ class LastScrapedEventMarkerRepositoryTest {
     LastScrapedEventMarker eventMarker1 = new LastScrapedEventMarker("config1", LocalDateTime.now().toInstant(ZoneOffset.UTC), "title1", "marker1");
     LastScrapedEventMarker eventMarker2 = new LastScrapedEventMarker("config2", LocalDateTime.now().toInstant(ZoneOffset.UTC), "title2", "marker2");
 
+    //when
+    when(scraperIdNameCache.getIdByScraperName("config1")).thenReturn(20);
+    when(scraperIdNameCache.getIdByScraperName("config2")).thenReturn(40);
 
     //then
     lastScrapedEventMarkerRepository.store(eventMarker1);
@@ -44,63 +50,69 @@ class LastScrapedEventMarkerRepositoryTest {
 
     assertThat(lastScrapedEventMarkerEntityCaptor.getAllValues())
         .extracting(
-            LastScrapedEventMarkerEntity::getScraperConfigurationName,
-            LastScrapedEventMarkerEntity::getRunDateTime,
-            LastScrapedEventMarkerEntity::getEventTitle,
-            LastScrapedEventMarkerEntity::getMarker
+            EntityLastScrapedEventMarker::getScraperId,
+            EntityLastScrapedEventMarker::getRunTime,
+            EntityLastScrapedEventMarker::getEventTitle,
+            EntityLastScrapedEventMarker::getMarker
         ).contains(
-            tuple(eventMarker1.scraperConfigurationName(), eventMarker1.runDateTime(), eventMarker1.eventTitle(), eventMarker1.marker()),
-            tuple(eventMarker2.scraperConfigurationName(), eventMarker2.runDateTime(), eventMarker2.eventTitle(), eventMarker2.marker())
+            tuple(20, eventMarker1.runDateTime(), eventMarker1.eventTitle(), eventMarker1.marker()),
+            tuple(40, eventMarker2.runDateTime(), eventMarker2.eventTitle(), eventMarker2.marker())
         );
 
   }
 
-  @Test
-  void whenFindByNotExistsScraperConfigurationNameThenReturnEmptyMarker() {
-    //given
-    final String scraperConfigurationName = "not_exists_scraper";
+  @Nested
+  class FindByScraperConfigurationNameTest {
 
-    //when
-    when(lastScrapedEventMarkerEntityRepository.findByScraperConfigurationName(scraperConfigurationName))
-        .thenReturn(Optional.empty());
+    @Test
+    void whenNotExistsThenReturnEmptyMarker() {
+      //given
+      final int scraperId = 4560;
 
-    //then
-    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName, true);
+      //when
+      when(lastScrapedEventMarkerEntityRepository.findByScraperId(scraperId))
+          .thenReturn(Optional.empty());
 
-    assertThat(lastScrapedEventMarker).isEmpty();
-    verify(lastScrapedEventMarkerEntityRepository).findByScraperConfigurationName(scraperConfigurationName);
-  }
+      //then
+      final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findLastCompletedByScraperConfigurationId(scraperId);
 
-  @Test
-  void whenFindByExistsScraperConfigurationNameThenReturnMarker() {
-    //given
-    final String scraperConfigurationName = "exists_scraper";
-    final Instant localDateTime = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+      assertThat(lastScrapedEventMarker).isEmpty();
+      verify(lastScrapedEventMarkerEntityRepository).findByScraperId(scraperId);
+    }
 
-    final LastScrapedEventMarkerEntity lastScrapedEventMarkerEntity = new LastScrapedEventMarkerEntity();
-    lastScrapedEventMarkerEntity.setMarker("maker1");
-    lastScrapedEventMarkerEntity.setRunDateTime(localDateTime);
-    lastScrapedEventMarkerEntity.setEventTitle("title1");
-    lastScrapedEventMarkerEntity.setScraperConfigurationName("exists_scraper");
-    lastScrapedEventMarkerEntity.setComplete(true);
+    @Test
+    void whenExistsThenReturnMarker() {
+      //given
+      final String scraperConfigurationName = "exists_scraper";
+      final Instant localDateTime = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+      final int scraperId = 4570;
 
-    //when
-    when(lastScrapedEventMarkerEntityRepository.findByScraperConfigurationName(scraperConfigurationName))
-        .thenReturn(Optional.of(lastScrapedEventMarkerEntity));
+      final EntityLastScrapedEventMarker entityLastScrapedEventMarker = new EntityLastScrapedEventMarker();
+      entityLastScrapedEventMarker.setMarker("maker1");
+      entityLastScrapedEventMarker.setRunTime(localDateTime);
+      entityLastScrapedEventMarker.setEventTitle("title1");
+      entityLastScrapedEventMarker.setScraperId(scraperId);
+      entityLastScrapedEventMarker.setComplete(true);
 
-    //then
-    final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(scraperConfigurationName, true);
+      //when
+      when(scraperIdNameCache.getScraperNameById(scraperId)).thenReturn(scraperConfigurationName);
+      when(lastScrapedEventMarkerEntityRepository.findByScraperId(scraperId))
+          .thenReturn(Optional.of(entityLastScrapedEventMarker));
 
-    assertThat(lastScrapedEventMarker).isNotEmpty()
-        .get()
-        .extracting(
-            LastScrapedEventMarker::scraperConfigurationName,
-            LastScrapedEventMarker::runDateTime,
-            LastScrapedEventMarker::eventTitle,
-            LastScrapedEventMarker::marker
-        )
-        .contains(scraperConfigurationName, localDateTime, "title1", "maker1");
+      //then
+      final Optional<LastScrapedEventMarker> lastScrapedEventMarker = lastScrapedEventMarkerRepository.findLastCompletedByScraperConfigurationId(scraperId);
 
-    verify(lastScrapedEventMarkerEntityRepository).findByScraperConfigurationName(scraperConfigurationName);
+      assertThat(lastScrapedEventMarker).isNotEmpty()
+          .get()
+          .extracting(
+              LastScrapedEventMarker::scraperConfigurationName,
+              LastScrapedEventMarker::runDateTime,
+              LastScrapedEventMarker::eventTitle,
+              LastScrapedEventMarker::marker
+          )
+          .contains(scraperConfigurationName, localDateTime, "title1", "maker1");
+
+      verify(lastScrapedEventMarkerEntityRepository).findByScraperId(scraperId);
+    }
   }
 }

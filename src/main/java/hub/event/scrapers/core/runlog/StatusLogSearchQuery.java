@@ -10,28 +10,28 @@ public class StatusLogSearchQuery {
   private final Instant startTimeFrom;
   private final Instant finishTimeTo;
   private final Instant finishTimeFrom;
-  private final Integer scannedEventCount;
-  private final Integer errorCount;
+  private final Integer scannedEventGreaterThanOrEqualTo;
+  private final Integer errorCountGreaterThanOrEqualTo;
   private final Boolean hasErrors;
   private final Boolean hasScannedEvent;
   private final Integer pageSize;
   private final Integer page;
 
-  private StatusLogSearchQuery(List<String> configurationNames, Instant startTimeTo, Instant startTimeFrom, Instant finishTimeTo, Instant finishTime, Integer scannedEventCount, Integer errorCount, Boolean hasErrors, Boolean hasScannedEvent, Integer page, Integer pageSize) {
+  private StatusLogSearchQuery(List<String> configurationNames, Instant startTimeTo, Instant startTimeFrom, Instant finishTimeTo, Instant finishTime, Integer scannedEventGreaterThanOrEqualTo, Integer errorCountGreaterThanOrEqualTo, Boolean hasErrors, Boolean hasScannedEvent, Integer page, Integer pageSize) {
     this.configurationNames = configurationNames;
     this.startTimeTo = startTimeTo;
     this.startTimeFrom = startTimeFrom;
     this.finishTimeTo = finishTimeTo;
     this.finishTimeFrom = finishTime;
-    this.scannedEventCount = scannedEventCount;
-    this.errorCount = errorCount;
+    this.scannedEventGreaterThanOrEqualTo = scannedEventGreaterThanOrEqualTo;
+    this.errorCountGreaterThanOrEqualTo = errorCountGreaterThanOrEqualTo;
     this.hasErrors = hasErrors;
     this.hasScannedEvent = hasScannedEvent;
     this.pageSize = pageSize;
     this.page = page;
   }
 
-  public StatusLogSearchCommandBuilder builder() {
+  public static StatusLogSearchCommandBuilder builder() {
     return new StatusLogSearchCommandBuilder();
   }
 
@@ -55,12 +55,12 @@ public class StatusLogSearchQuery {
     return finishTimeTo;
   }
 
-  public Integer scannedEventCount() {
-    return scannedEventCount;
+  public Integer scannedEventGreaterThanOrEqualTo() {
+    return scannedEventGreaterThanOrEqualTo;
   }
 
-  public Integer errorCount() {
-    return errorCount;
+  public Integer errorCountGreaterThanOrEqualTo() {
+    return errorCountGreaterThanOrEqualTo;
   }
 
   public Boolean hasErrors() {
@@ -87,20 +87,22 @@ public class StatusLogSearchQuery {
     return Objects.nonNull(page) && Objects.nonNull(pageSize);
   }
 
-  static class StatusLogSearchCommandBuilder {
+  public static class StatusLogSearchCommandBuilder {
     private List<String> configurationNames;
     private Instant startTimeTo;
     private Instant startTimeFrom;
     private Instant finishTimeTo;
     private Instant finishTimeFrom;
-    private Integer scannedEventCount;
-    private Integer errorCount;
+    private Integer scannedEventGreaterThanOrEqualTo;
+    private Integer errorCountGreaterThanOrEqualTo;
     private Boolean hasErrors;
+
     private Boolean hasScannedEvent;
+
     private Integer pageSize;
     private Integer page;
 
-    StatusLogSearchCommandBuilder() {
+    private StatusLogSearchCommandBuilder() {
     }
 
     public StatusLogSearchCommandBuilder configurationNames(List<String> configurationNames) {
@@ -128,13 +130,18 @@ public class StatusLogSearchQuery {
       return this;
     }
 
-    public StatusLogSearchCommandBuilder scannedEventCount(Integer scannedEventCount) {
-      this.scannedEventCount = scannedEventCount;
+    public StatusLogSearchCommandBuilder scannedEventGreaterThanOrEqualTo(int scannedEventCount) {
+      this.scannedEventGreaterThanOrEqualTo = scannedEventCount;
       return this;
     }
 
-    public StatusLogSearchCommandBuilder errorCount(Integer errorCount) {
-      this.errorCount = errorCount;
+    public StatusLogSearchCommandBuilder errorCountGreaterThanOrEqualTo(int errorCount) {
+      this.errorCountGreaterThanOrEqualTo = errorCount;
+      return this;
+    }
+
+    public StatusLogSearchCommandBuilder hasScannedEvent(Boolean hasScannedEvent) {
+      this.hasScannedEvent = hasScannedEvent;
       return this;
     }
 
@@ -143,18 +150,14 @@ public class StatusLogSearchQuery {
       return this;
     }
 
-    public StatusLogSearchCommandBuilder page(Integer page) {
+    public StatusLogSearchCommandBuilder page(int page, int pageSize) {
       this.page = page;
-      return this;
-    }
-
-    public StatusLogSearchCommandBuilder pageSize(Integer pageSize) {
       this.pageSize = pageSize;
       return this;
     }
 
     public StatusLogSearchQuery build() {
-      return new StatusLogSearchQuery(configurationNames, startTimeTo, startTimeFrom, finishTimeTo, finishTimeFrom, scannedEventCount, errorCount, hasErrors, hasScannedEvent, page, pageSize);
+      return new StatusLogSearchQuery(configurationNames, startTimeTo, startTimeFrom, finishTimeTo, finishTimeFrom, scannedEventGreaterThanOrEqualTo, errorCountGreaterThanOrEqualTo, hasErrors, hasScannedEvent, page, pageSize);
     }
   }
 

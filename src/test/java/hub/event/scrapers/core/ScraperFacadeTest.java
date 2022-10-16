@@ -1,12 +1,10 @@
 package hub.event.scrapers.core;
 
 import hub.event.scrapers.core.exceptions.ScraperConfigurationByNameNotExists;
-import hub.event.scrapers.core.scraper.LastScrapedEventMarker;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,43 +18,45 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ScraperFacadeTest {
   @Mock
-  private LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
-  @Mock
   private ScraperConfigRepository scraperConfigRepository;
-
-  @Captor
-  ArgumentCaptor<LastScrapedEventMarker> lastScrapedEventMarkerArgumentCaptor;
+  @Mock
+  private ScraperIdNameCache scraperIdNameCache;
   @InjectMocks
   private ScraperFacade scraperFacade;
 
   @Nested
   class ScraperConfigTest {
     @Test
-    void whenActivateScraperThatNotExistThenCreateNewRecord() {
+    void whenActivateScraperThatNotExistThenThrowException() {
       //given
       final String scraperName = "sc1";
       //when
-      when(scraperConfigRepository.exists(scraperName)).thenReturn(false);
+      int scraperId = 100;
+      when(scraperIdNameCache.getIdByScraperName(scraperName)).thenReturn(scraperId);
+      when(scraperConfigRepository.exists(scraperId)).thenReturn(false);
       //then
-      scraperFacade.activateScraperByConfigurationName(scraperName);
+      Assertions.assertThatExceptionOfType(ScraperConfigurationByNameNotExists.class)
+          .isThrownBy(() -> scraperFacade.activateScraperByConfigurationName(scraperName));
 
-      verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository).create(scraperName, ZoneId.systemDefault(), true);
-      verify(scraperConfigRepository, never()).activate(scraperName);
+      verify(scraperConfigRepository).exists(scraperId);
+      verify(scraperConfigRepository, never()).activate(scraperId);
     }
 
     @Test
-    void whenActivateScraperThatExistThenFinishSuccessfully() {
+    void whenActivateScraperThatExistThenCallActive() {
       //given
       final String scraperName = "sc4";
       //when
-      when(scraperConfigRepository.exists(scraperName)).thenReturn(true);
+      int scraperId = 4;
+      when(scraperIdNameCache.getIdByScraperName(scraperName)).thenReturn(scraperId);
+      when(scraperConfigRepository.exists(scraperId)).thenReturn(true);
       //then
-      scraperFacade.activateScraperByConfigurationName(scraperName);
+      Assertions.assertThatCode(() -> scraperFacade.activateScraperByConfigurationName(scraperName))
+          .doesNotThrowAnyException();
 
-      verify(scraperConfigRepository).exists(scraperName);
+      verify(scraperConfigRepository).exists(scraperId);
       verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
-      verify(scraperConfigRepository).activate(scraperName);
+      verify(scraperConfigRepository).activate(scraperId);
     }
 
     @Test
@@ -64,27 +64,29 @@ class ScraperFacadeTest {
       //given
       final String scraperName = "sc2";
       //when
-      when(scraperConfigRepository.exists(scraperName)).thenReturn(false);
+      int scraperId = 2;
+      when(scraperIdNameCache.getIdByScraperName(scraperName)).thenReturn(scraperId);
+      when(scraperConfigRepository.exists(scraperId)).thenReturn(false);
       //then
       assertThrows(ScraperConfigurationByNameNotExists.class, () -> scraperFacade.deactivateScraperByConfigurationName(scraperName));
 
-      verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
-      verify(scraperConfigRepository, never()).deactivate(scraperName);
+      verify(scraperConfigRepository).exists(scraperId);
+      verify(scraperConfigRepository, never()).deactivate(scraperId);
     }
 
     @Test
-    void whenDeactivateExistsScraperThanFinishSuccessfully() {
+    void whenDeactivateExistsScraperThenCallDeactivate() {
       //given
       final String scraperName = "sc3";
       //when
-      when(scraperConfigRepository.exists(scraperName)).thenReturn(true);
+      int scraperId = 3;
+      when(scraperIdNameCache.getIdByScraperName(scraperName)).thenReturn(scraperId);
+      when(scraperConfigRepository.exists(scraperId)).thenReturn(true);
       //then
       assertDoesNotThrow(() -> scraperFacade.deactivateScraperByConfigurationName(scraperName));
 
-      verify(scraperConfigRepository).exists(scraperName);
-      verify(scraperConfigRepository, never()).create(scraperName, ZoneId.systemDefault(), true);
-      verify(scraperConfigRepository).deactivate(scraperName);
+      verify(scraperConfigRepository).exists(scraperId);
+      verify(scraperConfigRepository).deactivate(scraperId);
     }
   }
 

@@ -20,28 +20,32 @@ class ScraperRunService {
   private final EventFacadeAdapter eventFacadeAdapter;
   private final LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
   private final List<PageScraperPort> pageScrapers;
+  private final ScraperIdNameCache scraperIdNameCache;
 
   @Autowired
-  ScraperRunService(ScraperConfigRepository scraperConfigRepository, EventFacadeAdapter eventFacadeAdapter, LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository, List<PageScraperPort> pageScrapers) {
+  ScraperRunService(ScraperConfigRepository scraperConfigRepository, EventFacadeAdapter eventFacadeAdapter, LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository, List<PageScraperPort> pageScrapers, ScraperIdNameCache scraperIdNameCache) {
     this.scraperConfigRepository = scraperConfigRepository;
     this.eventFacadeAdapter = eventFacadeAdapter;
     this.lastScrapedEventMarkerRepository = lastScrapedEventMarkerRepository;
     this.pageScrapers = pageScrapers;
+    this.scraperIdNameCache = scraperIdNameCache;
+  }
+
+  @PostConstruct
+  void createScrapersConfigsIfMissingAndFillIdNameCache() {
+    final Collection<ScraperConfig> scraperConfigs = scraperConfigRepository.allScraperConfigs();
+    scraperIdNameCache.add(scraperConfigs);
+
+    final List<PageScraperPort> scrapersWithoutConfig = getScraperThatConfigNotFoundByConfigurationName(scraperConfigs);
+
+    for (PageScraperPort pageScraperPort : scrapersWithoutConfig) {
+      ScraperConfig scraperConfig = scraperConfigRepository.create(pageScraperPort.configurationName(), pageScraperPort.timeZone(), true);
+      scraperIdNameCache.add(scraperConfig);
+    }
   }
 
   @Scheduled(cron = "${scrapers.run.cron.expression}")
 //  @Scheduled(cron = "0 0 * * *")
-
-  @PostConstruct
-  void createScrapersConfigsIfMissing() {
-    final Collection<ScraperConfig> scraperConfigs = scraperConfigRepository.allScraperConfigs();
-    final List<PageScraperPort> scrapersWithoutConfig = getScraperThatConfigNotFoundByConfigurationName(scraperConfigs);
-
-    for (PageScraperPort pageScraperPort : scrapersWithoutConfig) {
-      scraperConfigRepository.create(pageScraperPort.configurationName(), pageScraperPort.timeZone(),true);
-    }
-  }
-
   void start() {
     final Collection<ScraperConfig> scraperConfigs = scraperConfigRepository.allScraperConfigs();
 
@@ -50,8 +54,8 @@ class ScraperRunService {
 
     eventFacadeAdapter.saveAll(scrapedEventList);
 
-    final List<String> runScraperConfigurationsNames = getRunScraperConfigurationsNames(pageScrapersToRun);
-    lastScrapedEventMarkerRepository.makeDraftActive(runScraperConfigurationsNames);
+    final List<Integer> runScraperConfigurationsIds = getRunScraperConfigurationsIds(pageScrapersToRun);
+    lastScrapedEventMarkerRepository.markAllMarkersByIdsAsActive(runScraperConfigurationsIds);
 
   }
 
@@ -81,9 +85,10 @@ class ScraperRunService {
         .toList();
   }
 
-  private List<String> getRunScraperConfigurationsNames(List<PageScraperPort> pageScrapersToRun) {
+  private List<Integer> getRunScraperConfigurationsIds(List<PageScraperPort> pageScrapersToRun) {
     return pageScrapersToRun.stream()
         .map(PageScraperPort::configurationName)
+        .map(scraperIdNameCache::getIdByScraperName)
         .toList();
   }
 }

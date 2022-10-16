@@ -59,6 +59,7 @@ class SingleEventDateWithLocationTest {
         assertEquals(city, singleDateContainsStartDateAndTime.city());
         assertEquals(address, singleDateContainsStartDateAndTime.address());
         assertEquals(locationName, singleDateContainsStartDateAndTime.locationName());
+        assertEquals(timeZone, singleDateContainsStartDateAndTime.timeZone());
         assertNull(singleDateContainsStartDateAndTime.endDate());
         assertNull(singleDateContainsStartDateAndTime.endTime());
         assertTrue(singleDateContainsStartDateAndTime.isSingleDate());
@@ -77,6 +78,7 @@ class SingleEventDateWithLocationTest {
         assertEquals(endTime, fullEventDate.endTime());
         assertEquals(address, fullEventDate.address());
         assertEquals(locationName, fullEventDate.locationName());
+        assertEquals(timeZone, fullEventDate.timeZone());
         assertTrue(fullEventDate.isSingleDate());
         assertFalse(fullEventDate.isPeriodDate());
       });
@@ -132,6 +134,7 @@ class SingleEventDateWithLocationTest {
         assertEquals(endDate, periodDateContainsStartDateAndTime.endDate());
         assertEquals(address, periodDateContainsStartDateAndTime.address());
         assertEquals(locationName, periodDateContainsStartDateAndTime.locationName());
+        assertEquals(timeZone, periodDateContainsStartDateAndTime.timeZone());
         assertNull(periodDateContainsStartDateAndTime.endTime());
         assertTrue(periodDateContainsStartDateAndTime.isPeriodDate());
         assertFalse(periodDateContainsStartDateAndTime.isSingleDate());
@@ -149,6 +152,7 @@ class SingleEventDateWithLocationTest {
         assertEquals(endTime, fullEventDate.endTime());
         assertEquals(address, fullEventDate.address());
         assertEquals(locationName, fullEventDate.locationName());
+        assertEquals(timeZone, fullEventDate.timeZone());
         assertTrue(fullEventDate.isPeriodDate());
         assertFalse(fullEventDate.isSingleDate());
       });

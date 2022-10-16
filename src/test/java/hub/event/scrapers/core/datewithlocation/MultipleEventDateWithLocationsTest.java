@@ -18,7 +18,7 @@ class MultipleEventDateWithLocationsTest {
     final LocalDate dateInPast = LocalDate.of(2022, 7, 12);
     final LocalTime time = LocalTime.of(14, 20);
     final String city = "Thessia";
-    final String address= "Nightmare Street 102/34";
+    final String address = "Nightmare Street 102/34";
     final String locationName = "Black hole mirror club";
     final ZoneId timeZone = ZoneId.systemDefault();
     final MultipleEventDateWithLocations multipleEventDateWithLocations = MultipleEventDateWithLocations.create(date, time, timeZone, city, address, locationName);
@@ -41,22 +41,23 @@ class MultipleEventDateWithLocationsTest {
     final LocalDate date3 = LocalDate.now().plusDays(2).plusDays(8);
     final LocalTime time3 = LocalTime.of(18, 30);
     final String city3 = "Rannoch";
-    final String address= "Nightmare Street 102/34";
+    final String address = "Nightmare Street 102/34";
     final String locationName = "Black hole mirror club";
+    final ZoneId timeZone = ZoneId.systemDefault();
 
     Assertions.assertThatNoException().isThrownBy(() -> {
-      MultipleEventDateWithLocations multipleDate = MultipleEventDateWithLocations.create(date1, time1, ZoneId.systemDefault(), city1, address, locationName)
-          .add(date2, time2, ZoneId.systemDefault(), city2, address, locationName)
-          .add(date3, time3, ZoneId.systemDefault(), city3, address, locationName);
+      MultipleEventDateWithLocations multipleDate = MultipleEventDateWithLocations.create(date1, time1, timeZone, city1, address, locationName)
+          .add(date2, time2, timeZone, city2, address, locationName)
+          .add(date3, time3, timeZone, city3, address, locationName);
 
       assertThat(multipleDate).isNotNull();
 
       assertThat(multipleDate.eventDateWithLocations()).isNotNull()
           .hasSize(3)
-          .extracting(EventDateWithLocation::startDate, EventDateWithLocation::startTime,  EventDateWithLocation::city, EventDateWithLocation::address, EventDateWithLocation::locationName)
-          .contains(tuple(date1, time1, city1, address, locationName),
-              tuple(date2, time2, city2, address, locationName),
-              tuple(date3, time3, city3, address, locationName)
+          .extracting(EventDateWithLocation::startDate, EventDateWithLocation::startTime, EventDateWithLocation::city, EventDateWithLocation::address, EventDateWithLocation::locationName, EventDateWithLocation::timeZone)
+          .contains(tuple(date1, time1, city1, address, locationName, timeZone),
+              tuple(date2, time2, city2, address, locationName, timeZone),
+              tuple(date3, time3, city3, address, locationName, timeZone)
           );
     });
 

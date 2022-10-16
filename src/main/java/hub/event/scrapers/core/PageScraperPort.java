@@ -12,39 +12,40 @@ import java.util.Optional;
 
 public abstract class PageScraperPort {
   @Autowired
-  private ScraperRunLogRepository scraperRunLogRepository;
+  private ScraperLogRepository scraperLogRepository;
   @Autowired
   private LastScrapedEventMarkerRepository lastScrapedEventMarkerRepository;
 
-  String configurationName() {
+  @Autowired
+  private ScraperIdNameCache scraperIdNameCache;
+
+  protected String configurationName() {
     // chyba załatwi sprawę w modularnym monolicie
     return this.getClass().getName();
   }
 
   protected abstract Collection<ScrapedEvent> scrap();
 
-  ZoneId timeZone() {
+  protected ZoneId timeZone() {
     return ZoneId.systemDefault();
   }
 
-  void logError(Instant time, String errorCode, String description) {
+  protected void logError(Instant time, String errorCode, String description) {
     final ScraperRunErrorLog scraperRunErrorLog = new ScraperRunErrorLog(configurationName(), time, errorCode, description);
-    scraperRunLogRepository.save(scraperRunErrorLog);
+    scraperLogRepository.save(scraperRunErrorLog);
   }
 
-  void logStatus(Instant startTime, Instant finishTime, Integer scannedEventCount, Integer errorCount) {
+  protected void logStatus(Instant startTime, Instant finishTime, Integer scannedEventCount, Integer errorCount) {
     final ScraperRunStatusLog scraperRunStatusLog = new ScraperRunStatusLog(configurationName(), startTime, finishTime, scannedEventCount, errorCount);
-    scraperRunLogRepository.save(scraperRunStatusLog);
+    scraperLogRepository.save(scraperRunStatusLog);
   }
 
-  Optional<LastScrapedEventMarker> lastScrapedEventMarkerByConfigurationName() {
-    return lastScrapedEventMarkerRepository.findByScraperConfigurationName(configurationName(), true);
+  protected Optional<LastScrapedEventMarker> lastScrapedEventMarkerByConfigurationName() {
+    Integer id = scraperIdNameCache.getIdByScraperName(configurationName());
+    return lastScrapedEventMarkerRepository.findLastCompletedByScraperConfigurationId(id);
   }
 
-  void saveLastScrapedEventMarker(Instant runDateTime, String eventTitle, String marker) {
-    final Optional<LastScrapedEventMarker> savedScrapedEventMarker = lastScrapedEventMarkerRepository.findByScraperConfigurationName(configurationName(), false);
-    savedScrapedEventMarker.ifPresent(lastScrapedEventMarkerRepository::drop);
-
+  protected void saveLastScrapedEventMarker(Instant runDateTime, String eventTitle, String marker) {
     final LastScrapedEventMarker newScrapedEventMarkerToSave = new LastScrapedEventMarker(configurationName(), runDateTime, eventTitle, marker);
     lastScrapedEventMarkerRepository.store(newScrapedEventMarkerToSave);
   }

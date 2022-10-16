@@ -74,6 +74,10 @@ public class SingleEventDateWithLocation {
     return eventDateWithLocation.locationName();
   }
 
+  ZoneId timeZone(){
+    return eventDateWithLocation.timeZone();
+  }
+
   private static void validateStartDateTimeAndEndDateTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) throws EventDateEndDateTimeBeforeStartDateTimeException, EventDateInPastException {
     final LocalDateTime startLocalDateTime = LocalDateTime.of(startDate, startTime);
     final LocalDateTime endLocalDateTime = LocalDateTime.of(endDate, endTime);

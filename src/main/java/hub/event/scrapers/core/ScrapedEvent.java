@@ -7,13 +7,13 @@ import java.util.*;
 
 public class ScrapedEvent {
 
-  private Map<String, String> metadata;
-  private String title;
-  private String description;
-  private String sourceLink;
-  private List<String> types;
-  private SingleEventDateWithLocation singleEventDateWithLocation;
-  private MultipleEventDateWithLocations multipleEventDateWithLocations;
+  private final Map<String, String> metadata;
+  private final String title;
+  private final String description;
+  private final String sourceLink;
+  private final List<String> types;
+  private final SingleEventDateWithLocation singleEventDateWithLocation;
+  private final MultipleEventDateWithLocations multipleEventDateWithLocations;
 
   // nowa klasa na powtarzający się event
   // Period - od kiedy do kiedy
@@ -29,9 +29,6 @@ public class ScrapedEvent {
     this.types = types;
     this.singleEventDateWithLocation = singleEventDateWithLocation;
     this.multipleEventDateWithLocations = multipleEventDateWithLocations;
-  }
-
-  private ScrapedEvent() {
   }
 
   public static ScrapedEventBuilder builder(SingleEventDateWithLocation singleEventDateWithLocation) {
@@ -88,7 +85,7 @@ public class ScrapedEvent {
       this.types = new ArrayList<>();
     }
 
-    private ScrapedEventBuilder(SingleEventDateWithLocation singleEventDateWithLocation) {
+    public ScrapedEventBuilder(SingleEventDateWithLocation singleEventDateWithLocation) {
       this();
       this.singleEventDateWithLocation = singleEventDateWithLocation;
     }
