@@ -196,7 +196,7 @@ class UserServiceTest {
         System.out.println(userDtoFull.getFilters());
         Optional<UserDtoFull> userByIdWithFilters1 = userService.getUserByIdWithFilters(103L);
         System.out.println("Filters from database");
-        System.out.println( userByIdWithFilters1.orElse(new UserDtoFull()).getFilters());
+        System.out.println(userByIdWithFilters1.orElse(new UserDtoFull()).getFilters());
     }
 
     @Test
@@ -232,7 +232,7 @@ class UserServiceTest {
     void getAllWithFiltersTest() {
 
         //given
-        List<Long> givenIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 11L, 13L);
+        List<Long> givenIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
 
         List<Filter> givenFiltersForIdFour = Arrays.asList(
                 new Filter(24L, 70L, 4L, "Biecz - Jazz | Blues",
@@ -261,24 +261,39 @@ class UserServiceTest {
             resultFiltersForUserFour = userIdFour.getFilters();
         }
 
+        UserDtoFull userIdSeven = userDtoFulls.get(6);
+//        System.out.println(userIdSeven);
+//        System.out.println(userIdSeven.getFilters());
+
+        List<Filter> resultFiltersForUserSeven = null;
+        if (userIdSeven.getId() == 7L) {
+            resultFiltersForUserSeven = userIdSeven.getFilters();
+        }
+
         List<Long> fistPageIds = userDtoFulls.stream().map(UserDtoFull::getId).toList();
 
         //then
 
         List<Filter> finalResultFiltersForUserFour = resultFiltersForUserFour;
+        List<Filter> finalResultFiltersForUserSeven = resultFiltersForUserSeven;
         assertAll(
                 //Test if first page contains User with Id 4
                 () -> assertFalse(userIdFourOptional.isEmpty()),
                 //Test if first page user Ids match expected Ids
                 () -> assertEquals(givenIds, fistPageIds),
                 //Test if User with Id 4 has expected filters
-                () -> assertEquals(givenFiltersForIdFour, finalResultFiltersForUserFour)
+                () -> assertEquals(givenFiltersForIdFour, finalResultFiltersForUserFour),
+                //Test if User with Id 7 has doesn't have filters as expected
+                () -> {
+                    assertNotNull(finalResultFiltersForUserSeven);
+                    assertTrue(finalResultFiltersForUserSeven.isEmpty());
+                }
         );
     }
 
     @Test
     @Order(9)
-    void experimentTest(){
+    void experimentTest() {
         Page<UserDto> all = userService.getAll(PageRequest.of(10, 10));
         all.toList().forEach(System.out::println);
     }
