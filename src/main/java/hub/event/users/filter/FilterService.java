@@ -27,6 +27,7 @@ public class FilterService {
                 .map(filterDtoMapper::map);
     }
 
+    @Transactional
     public FilterDto saveFilter(FilterDto filterDto) {
         // filterDto.setFilterId(null);
         Filter filterToSave = filterDtoMapper.map(filterDto);

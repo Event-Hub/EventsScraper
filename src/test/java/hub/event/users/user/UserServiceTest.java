@@ -2,9 +2,11 @@ package hub.event.users.user;
 
 import hub.event.users.filter.Filter;
 import hub.event.users.filter.FilterDtoMapper;
+import hub.event.users.filter.FilterService;
 import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
+import org.h2.tools.Server;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -38,10 +41,19 @@ class UserServiceTest {
     @Autowired
     private FilterDtoMapper filterDtoMapper;
 
+    @Autowired
+    private FilterService filterService;
+
+//    @BeforeAll
+//    public void initTest() throws SQLException {
+//        Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
+//                .start();
+//    }
+
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, userDtoMapper, filterDtoMapper);
+        userService = new UserService(userRepository, userDtoMapper, filterDtoMapper, filterService);
     }
 
     @Test
@@ -180,23 +192,33 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(10)
+    @DisplayName("Test of adding filter to user")
+    @Order(9)
     void addFilterToUserTest() {
         //given
 
+        //Showing data before test
+//        System.out.println("Before adding filter");
+//        Optional<UserDtoFull> userByIdWithFilters2 = userService.getUserByIdWithFilters(103L);
+//        userByIdWithFilters2.ifPresent(System.out::println);
+//        userByIdWithFilters2.ifPresent(x -> {
+//            System.out.println(x.getFilters());
+//        });
+
+
         //when
         Optional<UserDtoFull> userByIdWithFilters = userService.getUserByIdWithFilters(103L);
+
 
         UserDtoFull userDtoFull = userService.addFilterToUser(103L,
                 new FilterDto(null, 20L, 103L, "Biecz - Jazz | Blues",
                         LocalDateTime.of(2022, 6, 25, 15, 20),
                         LocalDateTime.of(2022, 6, 26, 23, 50)));
         //then
-        System.out.println("Filters of after adding");
-        System.out.println(userDtoFull.getFilters());
-        Optional<UserDtoFull> userByIdWithFilters1 = userService.getUserByIdWithFilters(103L);
-        System.out.println("Filters from database");
-        System.out.println(userByIdWithFilters1.orElse(new UserDtoFull()).getFilters());
+
+        Optional<UserDtoFull> userByIdWithFiltersAfterTest = userService.getUserByIdWithFilters(103L);
+
+        assertIterableEquals(userDtoFull.getFilters(),userByIdWithFiltersAfterTest.orElse(new UserDtoFull()).getFilters());
     }
 
     @Test
@@ -292,9 +314,10 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void experimentTest() {
         Page<UserDto> all = userService.getAll(PageRequest.of(10, 10));
         all.toList().forEach(System.out::println);
     }
+
 }

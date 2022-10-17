@@ -2,14 +2,13 @@ package hub.event.users.user;
 
 // Auth comment left in comments to prevent auto delete during imports optimization
 //import hub.event.auth.AuthService;
-import hub.event.auth.AuthService;
 
 import hub.event.users.filter.Filter;
 import hub.event.users.filter.FilterDtoMapper;
+import hub.event.users.filter.FilterService;
 import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,10 +26,13 @@ public class UserService {
 
     private final FilterDtoMapper filterDtoMapper;
 
-    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, FilterDtoMapper filterDtoMapper) {
+    private final FilterService filterService;
+
+    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, FilterDtoMapper filterDtoMapper, FilterService filterService) {
         this.userRepository = userRepository;
         this.userDtoMapper = userDtoMapper;
         this.filterDtoMapper = filterDtoMapper;
+        this.filterService = filterService;
     }
 
     //Tested
@@ -67,10 +69,17 @@ public class UserService {
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
-        //userToSave.getFilters().size();
+
+        //Initialize filters table
+        userToSave.getFilters().size();
+
+        //other way to do initialization
         //Hibernate.initialize(userToSave.getFilters());
         List<Filter> filters = userToSave.getFilters();
-        Filter filter = filterDtoMapper.map(filterDto);
+
+        FilterDto filterDtoSaved = filterService.saveFilter(filterDto);
+        Filter filter = filterDtoMapper.map(filterDtoSaved);
+
         filters.add(filter);
         userToSave.setFilters(filters);
 

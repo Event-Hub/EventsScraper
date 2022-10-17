@@ -64,7 +64,7 @@ class FilterServiceTest {
 
         //then
         assertAll(
-                () -> assertEquals(101,savedFilterDto.getFilterId()),
+                () -> assertEquals(102,savedFilterDto.getFilterId()),
                 () -> assertEquals(givenFilterDto.getCityId(),savedFilterDto.getCityId()),
                 () -> assertEquals(givenFilterDto.getUserId(),savedFilterDto.getUserId()),
                 () -> assertEquals(givenFilterDto.getName(),savedFilterDto.getName()),
