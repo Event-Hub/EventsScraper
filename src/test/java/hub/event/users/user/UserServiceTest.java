@@ -6,7 +6,6 @@ import hub.event.users.filter.FilterService;
 import hub.event.users.filter.dto.FilterDto;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
-import org.h2.tools.Server;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -36,24 +34,13 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserDtoMapper userDtoMapper;
-
-    @Autowired
-    private FilterDtoMapper filterDtoMapper;
-
-    @Autowired
     private FilterService filterService;
-
-//    @BeforeAll
-//    public void initTest() throws SQLException {
-//        Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
-//                .start();
-//    }
-
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, userDtoMapper, filterDtoMapper, filterService);
+        userService = new UserService(userRepository, filterService);
+
+
     }
 
     @Test

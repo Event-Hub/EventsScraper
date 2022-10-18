@@ -17,9 +17,9 @@ public class FilterService {
     private final FilterRepository filterRepository;
     private final FilterDtoMapper filterDtoMapper;
 
-    public FilterService(FilterRepository filterRepository, FilterDtoMapper filterDtoMapper) {
+    public FilterService(FilterRepository filterRepository) {
         this.filterRepository = filterRepository;
-        this.filterDtoMapper = filterDtoMapper;
+        this.filterDtoMapper = new FilterDtoMapper();
     }
 
     public Optional<FilterDto> getFilterById(Long id) {

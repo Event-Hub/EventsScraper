@@ -2,11 +2,9 @@ package hub.event.users.user;
 
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-@Service
 class UserDtoMapper {
 
 

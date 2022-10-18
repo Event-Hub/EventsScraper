@@ -28,10 +28,10 @@ public class UserService {
 
     private final FilterService filterService;
 
-    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, FilterDtoMapper filterDtoMapper, FilterService filterService) {
+    public UserService(UserRepository userRepository, FilterService filterService) {
         this.userRepository = userRepository;
-        this.userDtoMapper = userDtoMapper;
-        this.filterDtoMapper = filterDtoMapper;
+        this.userDtoMapper = new UserDtoMapper();
+        this.filterDtoMapper = new FilterDtoMapper();
         this.filterService = filterService;
     }
 
@@ -66,11 +66,12 @@ public class UserService {
     }
 
 
+    //TODO Add validation that use_id in filter is OK
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
 
-        //TODO zadbać o inicjalizację listy filtów - DONE
+        //TODO zadbać o inicjalizację listy filtrów - DONE
         //Initialize filters table
         userToSave.getFilters().size();
 
@@ -152,4 +153,11 @@ public class UserService {
         return allUsers.map(userDtoMapper::mapFull);
     }
 
+    public UserDtoMapper getUserDtoMapper() {
+        return userDtoMapper;
+    }
+
+    public FilterDtoMapper getFilterDtoMapper() {
+        return filterDtoMapper;
+    }
 }

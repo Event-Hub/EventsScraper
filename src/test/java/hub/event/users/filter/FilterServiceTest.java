@@ -19,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FilterServiceTest {
 
-    @Autowired
-    private FilterDtoMapper filterDtoMapper;
 
     @Autowired
     private FilterRepository filterRepository;
@@ -29,7 +27,7 @@ class FilterServiceTest {
 
     @BeforeEach
     void setUp() {
-        filterService = new FilterService(filterRepository, filterDtoMapper);
+        filterService = new FilterService(filterRepository);
     }
 
     @Test
