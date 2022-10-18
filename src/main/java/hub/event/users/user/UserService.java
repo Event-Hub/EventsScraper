@@ -70,6 +70,7 @@ public class UserService {
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
 
+        //TODO zadbać o inicjalizację listy filtów - DONE
         //Initialize filters table
         userToSave.getFilters().size();
 

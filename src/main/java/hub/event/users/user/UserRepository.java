@@ -11,6 +11,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    //TODO rozwiązać inaczej by ta metoda nie była potrzebna
+
     // raczej do wywalenia
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.filters WHERE u.username = ?1")
     User findByUsernameWithFilters(String username);

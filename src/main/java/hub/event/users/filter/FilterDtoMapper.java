@@ -3,6 +3,7 @@ package hub.event.users.filter;
 import hub.event.users.filter.dto.FilterDto;
 import org.springframework.stereotype.Service;
 
+//TODO Przerobić mappery na POJO
 @Service // do przerobienia na POJO
 public class FilterDtoMapper {
 

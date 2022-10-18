@@ -16,6 +16,7 @@ public class Filter {
     private Long filterId;
     private Long cityId;
 
+    //TODO Dodaj relacje dwukierunkowe
     // @ManyToOne
     private Long userId;
     private String name;

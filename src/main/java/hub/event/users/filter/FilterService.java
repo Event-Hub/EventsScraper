@@ -27,6 +27,7 @@ public class FilterService {
                 .map(filterDtoMapper::map);
     }
 
+    //TODO zapobiec nadpisywaniu obiektów przy save
     @Transactional
     public FilterDto saveFilter(FilterDto filterDto) {
         // filterDto.setFilterId(null);
@@ -35,6 +36,7 @@ public class FilterService {
         return filterDtoMapper.map(savedFilter);
     }
 
+    //
     @Transactional
     public Optional<FilterDto> updateFilter(Long id, FilterDto filterDto) {
         return filterRepository.findById(id)
@@ -47,6 +49,8 @@ public class FilterService {
     public void deleteFilter(Long id) {
         filterRepository.deleteById(id);
     }
+
+    //TODO przenieść metode do entity filter ??
 
     // ta metoda raczej mogła by być wewnątrz Filter
     // anemic model vs rich model
