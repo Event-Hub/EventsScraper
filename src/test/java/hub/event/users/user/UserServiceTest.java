@@ -164,10 +164,12 @@ class UserServiceTest {
         );
 
 
+        FilterDtoMapper filterDtoMapper = userService.getFilterDtoMapper();
+
         UserDtoFull given = new UserDtoFull(3L, "Buster Cora", "buster.cora@gmail.com",
                 LocalDate.of(2022, 7, 20),
                 LocalDate.of(1968, 2, 24),
-                filters);
+                filters.stream().map(filterDtoMapper::map).toList());
 
         //when
         Optional<UserDtoFull> resultOptional = userService.getUserByUserNameWithFilters("Buster Cora");
@@ -184,28 +186,18 @@ class UserServiceTest {
     void addFilterToUserTest() {
         //given
 
-        //Showing data before test
-//        System.out.println("Before adding filter");
-//        Optional<UserDtoFull> userByIdWithFilters2 = userService.getUserByIdWithFilters(103L);
-//        userByIdWithFilters2.ifPresent(System.out::println);
-//        userByIdWithFilters2.ifPresent(x -> {
-//            System.out.println(x.getFilters());
-//        });
-
 
         //when
-        Optional<UserDtoFull> userByIdWithFilters = userService.getUserByIdWithFilters(103L);
-
 
         UserDtoFull userDtoFull = userService.addFilterToUser(103L,
-                new FilterDto(null, 20L, 103L, "Biecz - Jazz | Blues",
+                new FilterDto(null, 20L, null, "Biecz - Jazz | Blues",
                         LocalDateTime.of(2022, 6, 25, 15, 20),
                         LocalDateTime.of(2022, 6, 26, 23, 50)));
         //then
 
         Optional<UserDtoFull> userByIdWithFiltersAfterTest = userService.getUserByIdWithFilters(103L);
 
-        assertIterableEquals(userDtoFull.getFilters(),userByIdWithFiltersAfterTest.orElse(new UserDtoFull()).getFilters());
+        assertIterableEquals(userDtoFull.getFilterDtos(),userByIdWithFiltersAfterTest.orElse(new UserDtoFull()).getFilterDtos());
     }
 
     @Test
@@ -252,6 +244,8 @@ class UserServiceTest {
                         LocalDateTime.of(2024, 3, 15, 6, 36))
         );
 
+        List<FilterDto> givenFilterDtosForIdFour = givenFiltersForIdFour.stream().map(userService.getFilterDtoMapper()::map).toList();
+
 
         //when
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -265,37 +259,37 @@ class UserServiceTest {
         Optional<UserDtoFull> userIdFourOptional = userDtoFulls.stream().filter(userDtoFull -> userDtoFull.getId() == 4L).findFirst();
         UserDtoFull userIdFour = userIdFourOptional.orElse(new UserDtoFull());
 
-        List<Filter> resultFiltersForUserFour = null;
+        List<FilterDto> resultFilterDtosForUserFour = null;
         if (userIdFour.getId() == 4L) {
-            resultFiltersForUserFour = userIdFour.getFilters();
+            resultFilterDtosForUserFour = userIdFour.getFilterDtos();
         }
 
         UserDtoFull userIdSeven = userDtoFulls.get(6);
 //        System.out.println(userIdSeven);
 //        System.out.println(userIdSeven.getFilters());
 
-        List<Filter> resultFiltersForUserSeven = null;
+        List<FilterDto> resultFilterDtosForUserSeven = null;
         if (userIdSeven.getId() == 7L) {
-            resultFiltersForUserSeven = userIdSeven.getFilters();
+            resultFilterDtosForUserSeven = userIdSeven.getFilterDtos();
         }
 
         List<Long> fistPageIds = userDtoFulls.stream().map(UserDtoFull::getId).toList();
 
         //then
 
-        List<Filter> finalResultFiltersForUserFour = resultFiltersForUserFour;
-        List<Filter> finalResultFiltersForUserSeven = resultFiltersForUserSeven;
+        List<FilterDto> finalResultFilterDtosForUserFour = resultFilterDtosForUserFour;
+        List<FilterDto> finalResultFilterDtosForUserSeven = resultFilterDtosForUserSeven;
         assertAll(
                 //Test if first page contains User with Id 4
                 () -> assertFalse(userIdFourOptional.isEmpty()),
                 //Test if first page user Ids match expected Ids
                 () -> assertEquals(givenIds, fistPageIds),
                 //Test if User with Id 4 has expected filters
-                () -> assertEquals(givenFiltersForIdFour, finalResultFiltersForUserFour),
+                () -> assertEquals(givenFilterDtosForIdFour, finalResultFilterDtosForUserFour),
                 //Test if User with Id 7 has doesn't have filters as expected
                 () -> {
-                    assertNotNull(finalResultFiltersForUserSeven);
-                    assertTrue(finalResultFiltersForUserSeven.isEmpty());
+                    assertNotNull(finalResultFilterDtosForUserSeven);
+                    assertTrue(finalResultFilterDtosForUserSeven.isEmpty());
                 }
         );
     }
@@ -308,3 +302,5 @@ class UserServiceTest {
     }
 
 }
+
+//Correction to change commit name from 2022-10-19

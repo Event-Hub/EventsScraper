@@ -1,5 +1,6 @@
 package hub.event.users.user;
 
+import hub.event.users.filter.FilterDtoMapper;
 import hub.event.users.user.dto.UserDto;
 import hub.event.users.user.dto.UserDtoFull;
 
@@ -7,8 +8,14 @@ import java.util.ArrayList;
 
 class UserDtoMapper {
 
+    private final FilterDtoMapper filterDtoMapper;
 
-     public UserDto map(User user) {
+    UserDtoMapper() {
+        filterDtoMapper = new FilterDtoMapper();
+    }
+
+
+    public UserDto map(User user) {
         UserDto dto = new UserDto();
 
         dto.setId(user.getUserId());
@@ -42,9 +49,15 @@ class UserDtoMapper {
         dto.setRegistrationDate(user.getRegistrationDate());
         dto.setBirthDate(user.getBirthDate());
 
-        //TODO zadbać by w DTO nie było nigdzie encji
+        //TODO zadbać by w DTO nie było nigdzie encji - DONE
         // nie eksponuj encji
-        dto.setFilters(user.getFilters());
+
+        dto.setFilterDtos(
+                user.getFilters()
+                        .stream()
+                        .map(filterDtoMapper::map)
+                        .toList()
+        );
 
         return dto;
     }
@@ -57,8 +70,18 @@ class UserDtoMapper {
         user.setEmail(dto.getEmail());
         user.setRegistrationDate(dto.getRegistrationDate());
         user.setBirthDate(dto.getBirthDate());
-        user.setFilters(dto.getFilters());
+        user.setFilters(
+                dto.getFilterDtos()
+                        .stream()
+                        .map(filterDtoMapper::map)
+                        .toList()
+        );
 
         return user;
+    }
+
+
+    public FilterDtoMapper getFilterDtoMapper() {
+        return filterDtoMapper;
     }
 }

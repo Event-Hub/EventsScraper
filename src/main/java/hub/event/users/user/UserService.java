@@ -66,10 +66,15 @@ public class UserService {
     }
 
 
-    //TODO Add validation that use_id in filter is OK
+    //TODO Add validation that use_id in filter is OK - DONE
     @Transactional
     public UserDtoFull addFilterToUser(Long userID, FilterDto filterDto) {
         User userToSave = userRepository.findById(userID).orElseThrow();
+
+        //UserID in fileterDtos validation
+        if(filterDto.getUserId() != userID) {
+            filterDto.setUserId(userID);
+        }
 
         //TODO zadbać o inicjalizację listy filtrów - DONE
         //Initialize filters table
@@ -137,8 +142,13 @@ public class UserService {
             target.setBirthDate(source.getBirthDate());
         }
 
-        if (source.getFilters() != null && !source.getFilters().isEmpty()) {
-            target.setFilters(source.getFilters());
+        if (source.getFilterDtos() != null && !source.getFilterDtos().isEmpty()) {
+            target.setFilters(
+                    source.getFilterDtos()
+                            .stream()
+                            .map(filterDtoMapper::map)
+                            .toList()
+            );
         }
 
         return target;

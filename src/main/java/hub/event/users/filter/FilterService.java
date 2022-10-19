@@ -27,10 +27,10 @@ public class FilterService {
                 .map(filterDtoMapper::map);
     }
 
-    //TODO zapobiec nadpisywaniu obiektów przy save
+    //TODO zapobiec nadpisywaniu obiektów przy save - DONE
     @Transactional
     public FilterDto saveFilter(FilterDto filterDto) {
-        // filterDto.setFilterId(null);
+        filterDto.setFilterId(null);
         Filter filterToSave = filterDtoMapper.map(filterDto);
         Filter savedFilter = filterRepository.save(filterToSave);
         return filterDtoMapper.map(savedFilter);
