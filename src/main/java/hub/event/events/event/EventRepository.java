@@ -3,7 +3,9 @@ package hub.event.events.event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,5 +13,5 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findById(Long id);
-    List<Event> findAllByEventDate(LocalDate date);
+    List<Event> findAllByStartDate(ZonedDateTime date);
 }

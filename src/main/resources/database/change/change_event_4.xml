@@ -25,6 +25,14 @@
             <column name="number" type="integer"/>
         </createTable>
 
+        <comment>Creat Type table</comment>
+        <createTable tableName="types">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="varchar"/>
+        </createTable>
+
         <comment>Create Event table</comment>
         <createTable tableName="events">
             <column name="event_id" type="bigint" autoIncrement="true">
@@ -32,7 +40,8 @@
             </column>
             <column name="city_id" type="bigint"/>
             <column name="place_id" type="bigint"/>
-            <column name="event_date" type="date"/>
+            <column name="start_date" type="java.sql.Types.TIMESTAMP_WITH_TIMEZONE"/>
+            <column name="end_date" type="java.sql.types.timestamp_with_timezone"/>
             <column name="title" type="varchar"/>
             <column name="description" type="varchar"/>
         </createTable>

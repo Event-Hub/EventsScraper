@@ -4,7 +4,10 @@ import hub.event.events.city.City;
 import hub.event.events.place.Place;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
@@ -20,20 +23,25 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "place_id")
     private Place place;
-    private LocalDate eventDate;
+    private ZonedDateTime startDate;
     // czy to jest jednorazowe wydarzenie? czy to jest okres?
     // data zakończenia?
+    private ZonedDateTime endDate;
     private String title;
     private String description;
 
     public Event() {
     }
 
-    public Event(Long id, City city, Place place, LocalDate eventDate, String title, String description) {
+    public Event(Long id, City city, Place place, ZonedDateTime startDate, ZonedDateTime endDate, String title, String description) {
         this.id = id;
         this.city = city;
         this.place = place;
-        this.eventDate = eventDate;
+        this.startDate = startDate;
+        if(!endDate.isAfter(startDate)){
+            throw new IllegalArgumentException("End date must be after start date");
+        }
+        this.endDate = endDate;
         this.title = title;
         this.description = description;
     }
@@ -46,12 +54,20 @@ public class Event {
         this.id = id;
     }
 
-    public LocalDate getDate() {
-        return eventDate;
+    public ZonedDateTime getStartDate() {
+        return startDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.eventDate = date;
+    public void setStartDate(ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public ZonedDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(ZonedDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public String getTitle() {
@@ -91,11 +107,11 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(city, event.city) && Objects.equals(place, event.place) && Objects.equals(eventDate, event.eventDate) && Objects.equals(title, event.title) && Objects.equals(description, event.description);
+        return city.equals(event.city) && place.equals(event.place) && startDate.equals(event.startDate) && endDate.equals(event.endDate) && title.equals(event.title) && description.equals(event.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(city, place, eventDate, title, description);
+        return Objects.hash(city, place, startDate, endDate, title, description);
     }
 }
