@@ -25,9 +25,9 @@
             <column name="number" type="integer"/>
         </createTable>
 
-        <comment>Creat Type table</comment>
+        <comment>Create Type table</comment>
         <createTable tableName="types">
-            <column name="id" type="bigint" autoIncrement="true">
+            <column name="type_id" type="bigint" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="type" type="varchar"/>
@@ -49,6 +49,21 @@
                                  referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="events" baseColumnNames="place_id" constraintName="fk_place" referencedTableName="places"
                                  referencedColumnNames="id"/>
+
+        <comment>Create Event_Type table</comment>
+        <createTable tableName="event_type">
+            <column name="event_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+            <column name="type_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="event_type" baseColumnNames="event_id" constraintName="fk_event"
+                                 referencedTableName="events" referencedColumnNames="event_id"></addForeignKeyConstraint>
+        <addForeignKeyConstraint baseTableName="event_type" baseColumnNames="type_id" constraintName="fk_type"
+                                 referencedTableName="types"
+                                 referencedColumnNames="type_id"></addForeignKeyConstraint>
     </changeSet>
 
 </databaseChangeLog>

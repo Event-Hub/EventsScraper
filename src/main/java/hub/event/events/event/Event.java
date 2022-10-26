@@ -2,12 +2,14 @@ package hub.event.events.event;
 
 import hub.event.events.city.City;
 import hub.event.events.place.Place;
+import hub.event.events.type.Type;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -29,6 +31,11 @@ public class Event {
     private ZonedDateTime endDate;
     private String title;
     private String description;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "event_type",
+    joinColumns = @JoinColumn(name = "event_id"),
+    inverseJoinColumns = @JoinColumn(name = "type_id"))
+    private List<Type> types;
 
     public Event() {
     }
@@ -100,6 +107,14 @@ public class Event {
 
     public void setPlace(Place place) {
         this.place = place;
+    }
+
+    public List<Type> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<Type> types) {
+        this.types = types;
     }
 
     @Override
