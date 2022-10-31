@@ -1,6 +1,6 @@
 package hub.event.users.filter.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class FilterDto {
@@ -8,13 +8,13 @@ public class FilterDto {
     private Long cityId;
     private Long userId;
     private String name;
-    private LocalDateTime fromHour;
-    private LocalDateTime toHour;
+    private ZonedDateTime fromHour;
+    private ZonedDateTime toHour;
 
     public FilterDto() {
     }
 
-    public FilterDto(Long filterId, Long cityId, Long userId, String name, LocalDateTime fromHour, LocalDateTime toHour) {
+    public FilterDto(Long filterId, Long cityId, Long userId, String name, ZonedDateTime fromHour, ZonedDateTime toHour) {
         this.filterId = filterId;
         this.cityId = cityId;
         this.userId = userId;
@@ -55,19 +55,19 @@ public class FilterDto {
         this.name = name;
     }
 
-    public LocalDateTime getFromHour() {
+    public ZonedDateTime getFromHour() {
         return fromHour;
     }
 
-    public void setFromHour(LocalDateTime fromHour) {
+    public void setFromHour(ZonedDateTime fromHour) {
         this.fromHour = fromHour;
     }
 
-    public LocalDateTime getToHour() {
+    public ZonedDateTime getToHour() {
         return toHour;
     }
 
-    public void setToHour(LocalDateTime toHour) {
+    public void setToHour(ZonedDateTime toHour) {
         this.toHour = toHour;
     }
 

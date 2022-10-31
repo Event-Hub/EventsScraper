@@ -1,14 +1,11 @@
 package hub.event.users.filter;
 
-import hub.event.users.filter.dto.FilterDto;
-
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@SequenceGenerator(name = "FILTER_ID_SEQ", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "FILTER_ID_SEQ", allocationSize = 1)
 public class Filter {
     @Id
     @GeneratedValue(generator = "FILTER_ID_SEQ", strategy = GenerationType.SEQUENCE)
@@ -20,14 +17,15 @@ public class Filter {
     // @ManyToOne
     private Long userId;
     private String name;
-    private LocalDateTime fromHour;
-    private LocalDateTime toHour;
+//    private LocalDateTime fromHour;
+    private ZonedDateTime fromHour;
+    private ZonedDateTime toHour;
 
 
     public Filter() {
     }
 
-    public Filter(Long filterId, Long cityId, Long userId, String name, LocalDateTime fromHour, LocalDateTime toHour) {
+    public Filter(Long filterId, Long cityId, Long userId, String name, ZonedDateTime fromHour, ZonedDateTime toHour) {
         this.filterId = filterId;
         this.cityId = cityId;
         this.userId = userId;
@@ -68,19 +66,19 @@ public class Filter {
         this.name = name;
     }
 
-    public LocalDateTime getFromHour() {
+    public ZonedDateTime getFromHour() {
         return fromHour;
     }
 
-    public void setFromHour(LocalDateTime fromHour) {
+    public void setFromHour(ZonedDateTime fromHour) {
         this.fromHour = fromHour;
     }
 
-    public LocalDateTime getToHour() {
+    public ZonedDateTime getToHour() {
         return toHour;
     }
 
-    public void setToHour(LocalDateTime toHour) {
+    public void setToHour(ZonedDateTime toHour) {
         this.toHour = toHour;
     }
 

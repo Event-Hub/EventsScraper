@@ -18,8 +18,8 @@
       <column name="filter_id" type="BIGINT"/>
       <column name="city_id" type="BIGINT"/>
       <column name="name" type="VARCHAR(255)"/>
-      <column name="from_hour" type="TIMESTAMP"/>
-      <column name="to_hour" type="TIMESTAMP"/>
+      <column name="from_hour" type="TIMESTAMP WITH TIME ZONE"/>
+      <column name="to_hour" type="TIMESTAMP WITH TIME ZONE"/>
       <column name="user_id" type="BIGINT"/>
     </loadUpdateData>
 

@@ -50,7 +50,7 @@ class UserDtoMapper {
         dto.setBirthDate(user.getBirthDate());
 
         //TODO zadbać by w DTO nie było nigdzie encji - DONE
-        // nie eksponuj encji
+        // nie eksponuj encji - DONE
 
         dto.setFilterDtos(
                 user.getFilters()

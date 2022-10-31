@@ -16,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +44,12 @@ class UserServiceTest {
         userService = new UserService(userRepository, filterService);
 
 
+    }
+
+    @Test
+    void ZoneIdsShow(){
+        Set<String> availableZoneIds = ZoneId.getAvailableZoneIds();
+        availableZoneIds.forEach(System.out::println);
     }
 
     @Test
@@ -154,13 +163,19 @@ class UserServiceTest {
 //        88,32,Ślesin - Rock,2020-03-05 07:09:00.000,2024-12-02 07:02:00.000,3
 
 
+        LocalDateTime fromHourFilter1 = LocalDateTime.of(2020, 7, 13, 2, 46);
+        LocalDateTime toHourFilter1 = LocalDateTime.of(2025, 1, 21, 18, 9);
+        LocalDateTime fromHourFilter2 = LocalDateTime.of(2020, 3, 5, 8, 9);
+        LocalDateTime toHourFilter2 = LocalDateTime.of(2024, 12, 2, 8, 2);
         List<Filter> filters = Arrays.asList(
                 new Filter(62L, 75L, 3L, "Ćmielów - Hip Hop | Rap",
-                        LocalDateTime.of(2020, 7, 13, 0, 46),
-                        LocalDateTime.of(2025, 1, 21, 17, 9)),
+                        ZonedDateTime.of(fromHourFilter1, ZoneId.of("Europe/Warsaw")),
+                        ZonedDateTime.of(toHourFilter1, ZoneId.of("Europe/Warsaw"))
+                ),
                 new Filter(88L, 32L, 3L, "Ślesin - Rock",
-                        LocalDateTime.of(2020, 3, 5, 7, 9),
-                        LocalDateTime.of(2024, 12, 2, 7, 2))
+                        ZonedDateTime.of(fromHourFilter2, ZoneId.of("Europe/Warsaw")),
+                        ZonedDateTime.of(toHourFilter2, ZoneId.of("Europe/Warsaw"))
+                )
         );
 
 
@@ -174,6 +189,13 @@ class UserServiceTest {
         //when
         Optional<UserDtoFull> resultOptional = userService.getUserByUserNameWithFilters("Buster Cora");
         UserDtoFull result = resultOptional.orElse(new UserDtoFull());
+
+        System.out.println("Given:");
+        System.out.println(given);
+        given.getFilterDtos().forEach(System.out::println);
+        System.out.println("Result:");
+        System.out.println(result);
+        result.getFilterDtos().forEach(System.out::println);
 
         //then
         assertEquals(given, result);
@@ -191,8 +213,16 @@ class UserServiceTest {
 
         UserDtoFull userDtoFull = userService.addFilterToUser(103L,
                 new FilterDto(null, 20L, null, "Biecz - Jazz | Blues",
-                        LocalDateTime.of(2022, 6, 25, 15, 20),
-                        LocalDateTime.of(2022, 6, 26, 23, 50)));
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2022, 6, 25, 15, 20),
+                                ZoneId.of("UTC")
+                        ),
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2022, 6, 26, 23, 50),
+                                ZoneId.of("UTC")
+                        )
+                )
+        );
         //then
 
         Optional<UserDtoFull> userByIdWithFiltersAfterTest = userService.getUserByIdWithFilters(103L);
@@ -237,11 +267,25 @@ class UserServiceTest {
 
         List<Filter> givenFiltersForIdFour = Arrays.asList(
                 new Filter(24L, 70L, 4L, "Biecz - Jazz | Blues",
-                        LocalDateTime.of(2020, 3, 15, 7, 51),
-                        LocalDateTime.of(2024, 10, 19, 21, 38)),
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2020, 3, 15, 8, 51),
+                                ZoneId.of("Europe/Warsaw")
+                        ),
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2024, 10, 19, 23, 38),
+                                ZoneId.of("Europe/Warsaw")
+                        )
+                ),
                 new Filter(34L, 52L, 4L, "Szczawnica - Jazz | Blues",
-                        LocalDateTime.of(2020, 2, 7, 1, 20),
-                        LocalDateTime.of(2024, 3, 15, 6, 36))
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2020, 2, 7, 2, 20),
+                                ZoneId.of("Europe/Warsaw")
+                        ),
+                        ZonedDateTime.of(
+                                LocalDateTime.of(2024, 3, 15, 7, 36),
+                                ZoneId.of("Europe/Warsaw")
+                        )
+                )
         );
 
         List<FilterDto> givenFilterDtosForIdFour = givenFiltersForIdFour.stream().map(userService.getFilterDtoMapper()::map).toList();
@@ -265,8 +309,7 @@ class UserServiceTest {
         }
 
         UserDtoFull userIdSeven = userDtoFulls.get(6);
-//        System.out.println(userIdSeven);
-//        System.out.println(userIdSeven.getFilters());
+
 
         List<FilterDto> resultFilterDtosForUserSeven = null;
         if (userIdSeven.getId() == 7L) {
