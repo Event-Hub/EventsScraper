@@ -107,3 +107,5 @@ public class Filter {
                 '}';
     }
 }
+
+//TODO modify all LocalDateTime in entities to ZonedDateTime - DONE

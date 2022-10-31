@@ -47,12 +47,6 @@ class UserServiceTest {
     }
 
     @Test
-    void ZoneIdsShow(){
-        Set<String> availableZoneIds = ZoneId.getAvailableZoneIds();
-        availableZoneIds.forEach(System.out::println);
-    }
-
-    @Test
     @DisplayName("Test of finding user by Id")
     @Order(1)
     void getUserByIdTest() {
@@ -336,14 +330,4 @@ class UserServiceTest {
                 }
         );
     }
-
-    @Test
-    @Order(10)
-    void experimentTest() {
-        Page<UserDto> all = userService.getAll(PageRequest.of(10, 10));
-        all.toList().forEach(System.out::println);
-    }
-
 }
-
-//Correction to change commit name from 2022-10-19
