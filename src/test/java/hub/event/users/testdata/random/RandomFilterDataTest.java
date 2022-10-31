@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 //Generates fake data which can be exported and then used for liquibase data
 
 @SpringBootTest()
-@ActiveProfiles(profiles = {"prod", "test","faker"})
+@ActiveProfiles(profiles = {"prod","faker"})
 @Disabled
 class RandomFilterDataTest {
 

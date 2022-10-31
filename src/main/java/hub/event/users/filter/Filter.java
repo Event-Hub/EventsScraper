@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@SequenceGenerator(name = "FILTER_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "FILTER_ID_SEQ", allocationSize = 1, initialValue = 1)
 public class Filter {
     @Id
     @GeneratedValue(generator = "FILTER_ID_SEQ", strategy = GenerationType.SEQUENCE)
