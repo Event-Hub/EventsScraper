@@ -15,8 +15,8 @@ public class Filter {
     private Long filterId;
     private Long cityId;
 
-    //TODO Dodaj relacje dwukierunkowe
-    // @ManyToOne
+    //TODO Dodaj relacje dwukierunkowe - IGNORED
+    // @ManyToOne -IGNORED
     private Long userId;
     private String name;
 //    private LocalDateTime fromHour;

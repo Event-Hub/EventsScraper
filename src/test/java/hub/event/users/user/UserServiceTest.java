@@ -157,10 +157,13 @@ class UserServiceTest {
 //        88,32,Ślesin - Rock,2020-03-05 07:09:00.000,2024-12-02 07:02:00.000,3
 
 
+
         LocalDateTime fromHourFilter1 = LocalDateTime.of(2020, 7, 13, 2, 46);
         LocalDateTime toHourFilter1 = LocalDateTime.of(2025, 1, 21, 18, 9);
         LocalDateTime fromHourFilter2 = LocalDateTime.of(2020, 3, 5, 8, 9);
         LocalDateTime toHourFilter2 = LocalDateTime.of(2024, 12, 2, 8, 2);
+
+        //ManytoOne spowodowało by problem z ustawieniem filtru -> z userem -> filtrami -> userami ...
         List<Filter> filters = Arrays.asList(
                 new Filter(62L, 75L, 3L, "Ćmielów - Hip Hop | Rap",
                         ZonedDateTime.of(fromHourFilter1, ZoneId.of("Europe/Warsaw")),
@@ -259,6 +262,7 @@ class UserServiceTest {
         //given
         List<Long> givenIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
 
+        //ManytoOne spowodowało by problem z ustawieniem filtru -> z userem -> filtrami -> userami ...
         List<Filter> givenFiltersForIdFour = Arrays.asList(
                 new Filter(24L, 70L, 4L, "Biecz - Jazz | Blues",
                         ZonedDateTime.of(

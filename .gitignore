@@ -37,3 +37,6 @@ build/
 /data/**
 
 .DS_Store
+
+### Problmes not for remote branch ###
+problems/
