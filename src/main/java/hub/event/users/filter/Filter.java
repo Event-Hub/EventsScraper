@@ -1,5 +1,7 @@
 package hub.event.users.filter;
 
+import hub.event.users.filter.dto.FilterDto;
+
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -106,6 +108,29 @@ public class Filter {
                 ", toHour=" + toHour +
                 '}';
     }
+
+
+    protected Filter setEntityFields(FilterDto source) {
+
+        if (source.getCityId() != null) {
+            setCityId(source.getCityId());
+        }
+        if (source.getUserId() != null) {
+            setUserId(source.getUserId());
+        }
+        if (source.getName() != null) {
+            setName(source.getName());
+        }
+        if (source.getFromHour() != null) {
+            setFromHour(source.getFromHour());
+        }
+        if (source.getToHour() != null) {
+            setToHour(source.getToHour());
+        }
+
+        return this;
+    }
+
 }
 
 //TODO modify all LocalDateTime in entities to ZonedDateTime - DONE

@@ -40,8 +40,8 @@ public class FilterService {
     @Transactional
     public Optional<FilterDto> updateFilter(Long id, FilterDto filterDto) {
         return filterRepository.findById(id)
-//            .map(target -> target.setEntityFields(filterDto))
-                .map(target -> setEntityFields(filterDto, target))
+            .map(target -> target.setEntityFields(filterDto))
+//                .map(target -> setEntityFields(filterDto, target))
                 .map(filterDtoMapper::map);
     }
 
@@ -50,30 +50,12 @@ public class FilterService {
         filterRepository.deleteById(id);
     }
 
-    //TODO przenieść metode do entity filter ??
+    //TODO przenieść metode do entity filter ?? - DONE
+    // setEntityFields przeniesiona do Filter - DONE
 
     // ta metoda raczej mogła by być wewnątrz Filter
     // anemic model vs rich model
-    private Filter setEntityFields(FilterDto source, Filter target) {
 
-        if (source.getCityId() != null) {
-            target.setCityId(source.getCityId());
-        }
-        if (source.getUserId() != null) {
-            target.setUserId(source.getUserId());
-        }
-        if (source.getName() != null) {
-            target.setName(source.getName());
-        }
-        if (source.getFromHour() != null) {
-            target.setFromHour(source.getFromHour());
-        }
-        if (source.getToHour() != null) {
-            target.setToHour(source.getToHour());
-        }
-
-        return target;
-    }
 
 }
 

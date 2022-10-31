@@ -54,7 +54,7 @@ public class UserService {
 
     @Transactional
     public Optional<UserDtoFull> getUserByUserNameWithFilters(String username) {
-        return Optional.of(userRepository.findByUsernameWithFilters(username))
+        return userRepository.findByUsername(username)
                 .map(userDtoMapper::mapFull);
     }
     //tested
