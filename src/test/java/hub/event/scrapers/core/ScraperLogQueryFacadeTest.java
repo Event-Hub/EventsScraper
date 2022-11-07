@@ -1,9 +1,6 @@
 package hub.event.scrapers.core;
 
-import hub.event.scrapers.core.runlog.ErrorLogSearchQuery;
-import hub.event.scrapers.core.runlog.ScraperRunErrorLog;
-import hub.event.scrapers.core.runlog.ScraperRunStatusLog;
-import hub.event.scrapers.core.runlog.StatusLogSearchQuery;
+import hub.event.scrapers.core.runlog.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

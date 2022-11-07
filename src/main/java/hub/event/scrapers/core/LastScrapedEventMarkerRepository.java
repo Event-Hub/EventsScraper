@@ -23,8 +23,8 @@ class LastScrapedEventMarkerRepository {
     jpaLastScrapedEventMarkerRepository.save(entityLastScrapedEventMarker);
   }
 
-  void markAllMarkersByIdsAsActive(List<Integer> ids) {
-    jpaLastScrapedEventMarkerRepository.updateSetAllActiveById(ids, ZonedDateTime.now().minusDays(1).toInstant());
+  void setAllAsCompleteByConfigurationsIds(List<Integer> ids) {
+    jpaLastScrapedEventMarkerRepository.setAllAsCompleteByConfigurationsIds(ids, ZonedDateTime.now().minusDays(1).toInstant());
   }
 
   Optional<LastScrapedEventMarker> findLastCompletedByScraperConfigurationId(Integer scraperId) {

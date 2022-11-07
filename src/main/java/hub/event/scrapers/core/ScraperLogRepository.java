@@ -1,9 +1,8 @@
 package hub.event.scrapers.core;
 
-import hub.event.scrapers.core.runlog.ErrorLogSearchQuery;
-import hub.event.scrapers.core.runlog.ScraperRunErrorLog;
-import hub.event.scrapers.core.runlog.ScraperRunStatusLog;
-import hub.event.scrapers.core.runlog.StatusLogSearchQuery;
+import hub.event.scrapers.core.runlog.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +17,13 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
-class ScraperLogRepository {
-
+public class ScraperLogRepository {
+  private final Logger logger = LoggerFactory.getLogger(ScraperLogRepository.class);
   private final JpaScraperRunLogRepository jpaScraperRunLogRepository;
   private final JpaScraperRunErrorRepository jpaScraperRunErrorRepository;
-
   private final ScraperIdNameCache scraperIdNameCache;
 
   @Autowired
@@ -36,16 +35,20 @@ class ScraperLogRepository {
 
   void save(ScraperRunStatusLog scraperRunStatusLog) {
     EntityScraperRunStatusLog entityScraperRunStatusLog = mapToEntity(scraperRunStatusLog);
+    logger.debug("Mapped EntityScraperRunStatusLog :{}", entityScraperRunStatusLog);
     jpaScraperRunLogRepository.save(entityScraperRunStatusLog);
   }
 
   void save(ScraperRunErrorLog scraperRunError) {
     EntityScraperRunErrorLog entityScraperRunErrorLog = mapToEntity(scraperRunError);
+    logger.debug("Mapped EntityScraperRunErrorLog :{}", entityScraperRunErrorLog);
     jpaScraperRunErrorRepository.save(entityScraperRunErrorLog);
   }
 
-  List<ScraperRunErrorLog> findAllErrorLog(ErrorLogSearchQuery errorLogSearchQuery) {
-    final Sort sort = Sort.by(Sort.Direction.ASC, "scraperId");
+  @Deprecated
+  //TODO move to runlog subpackage
+  public List<ScraperRunErrorLog> findAllErrorLog(ErrorLogSearchQuery errorLogSearchQuery) {
+    final Sort sort = Sort.by(Sort.Direction.ASC, ScraperRunErrorLogProperties.SCRAPER_ID);
     final Specification<EntityScraperRunErrorLog> findAllSpecification = new FindAllErrorLogSpecification(errorLogSearchQuery, scraperIdNameCache);
     final Pageable pageable = extractPageSettings(errorLogSearchQuery, sort);
 
@@ -56,8 +59,10 @@ class ScraperLogRepository {
 
   }
 
-  List<ScraperRunStatusLog> findAllStatusLog(StatusLogSearchQuery statusLogSearchQuery) {
-    final Sort sort = Sort.by(Sort.Direction.ASC, "scraperId");
+  @Deprecated
+  //TODO move to runlog subpackage
+  public List<ScraperRunStatusLog> findAllStatusLog(StatusLogSearchQuery statusLogSearchQuery) {
+    final Sort sort = Sort.by(Sort.Direction.ASC, ScraperRunErrorLogProperties.SCRAPER_ID);
     final Specification<EntityScraperRunStatusLog> findAllSpecification = new FindAllStatusLogSpecification(statusLogSearchQuery, scraperIdNameCache);
     final Pageable pageable = extractPageSettings(statusLogSearchQuery, sort);
 
@@ -67,6 +72,8 @@ class ScraperLogRepository {
         .toList();
   }
 
+  @Deprecated
+  //TODO move to runlog subpackage
   private List<EntityScraperRunStatusLog> findAllStatusLog(Specification<EntityScraperRunStatusLog> findAllSpecification, Pageable pageable, Sort sort) {
     if (Objects.isNull(pageable)) {
       return jpaScraperRunLogRepository.findAll(findAllSpecification, sort);
@@ -74,6 +81,8 @@ class ScraperLogRepository {
     return jpaScraperRunLogRepository.findAll(findAllSpecification, pageable).toList();
   }
 
+  @Deprecated
+  //TODO move to runlog subpackage
   private List<EntityScraperRunErrorLog> findAllErrorLog(Specification<EntityScraperRunErrorLog> findAllSpecification, Pageable pageable, Sort sort) {
     if (Objects.isNull(pageable)) {
       return jpaScraperRunErrorRepository.findAll(findAllSpecification, sort);
@@ -81,6 +90,8 @@ class ScraperLogRepository {
     return jpaScraperRunErrorRepository.findAll(findAllSpecification, pageable).toList();
   }
 
+  @Deprecated
+  //TODO move to runlog subpackage
   private ScraperRunStatusLog mapToLog(EntityScraperRunStatusLog entityScraperRunStatusLog) {
     final String scraperName = scraperIdNameCache.getScraperNameById(entityScraperRunStatusLog.getScraperId());
 
@@ -93,6 +104,8 @@ class ScraperLogRepository {
     );
   }
 
+  @Deprecated
+  //TODO move to runlog subpackage
   private ScraperRunErrorLog mapToLog(EntityScraperRunErrorLog entityScraperRunErrorLog) {
     final String scraperName = scraperIdNameCache.getScraperNameById(entityScraperRunErrorLog.getScraperId());
 
@@ -139,6 +152,7 @@ class ScraperLogRepository {
 
   private static class FindAllStatusLogSpecification implements Specification<EntityScraperRunStatusLog> {
 
+    private final transient Logger logger = LoggerFactory.getLogger(FindAllStatusLogSpecification.class);
     private final transient StatusLogSearchQuery searchQuery;
     private final transient ScraperIdNameCache scraperIdNameCache;
 
@@ -158,52 +172,60 @@ class ScraperLogRepository {
             .stream()
             .map(scraperIdNameCache::getIdByScraperName)
             .toList();
-        outputPredicates.add(criteriaBuilder.in(root.get("scraperId")).value(idsLists));
+        outputPredicates.add(criteriaBuilder.in(root.get(ScraperRunStatusLogProperties.SCRAPER_ID)).value(idsLists));
       }
 
       if (Objects.nonNull(searchQuery.startTimeFrom())) {
-        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("startTime"), searchQuery.startTimeFrom()));
+        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(ScraperRunStatusLogProperties.START_TIME), searchQuery.startTimeFrom()));
       }
 
       if (Objects.nonNull(searchQuery.startTimeTo())) {
-        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("startTime"), searchQuery.startTimeTo()));
+        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(ScraperRunStatusLogProperties.START_TIME), searchQuery.startTimeTo()));
       }
 
       if (Objects.nonNull(searchQuery.finishTimeFrom())) {
-        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("finishTime"), searchQuery.finishTimeFrom()));
+        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(ScraperRunStatusLogProperties.FINISH_TIME), searchQuery.finishTimeFrom()));
       }
 
       if (Objects.nonNull(searchQuery.finishTimeTo())) {
-        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("finishTime"), searchQuery.finishTimeTo()));
+        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(ScraperRunStatusLogProperties.FINISH_TIME), searchQuery.finishTimeTo()));
       }
 
       if (Objects.nonNull(searchQuery.hasScannedEvent())) {
         final Predicate predicate = Boolean.TRUE.equals(searchQuery.hasScannedEvent())
-            ? criteriaBuilder.greaterThan(root.get("scannedEventCount"), 0)
-            : criteriaBuilder.or(criteriaBuilder.equal(root.get("scannedEventCount"), 0), criteriaBuilder.isNull(root.get("scannedEventCount")));
+            ? criteriaBuilder.greaterThan(root.get(ScraperRunStatusLogProperties.SCANNED_EVENT_COUNT), 0)
+            : criteriaBuilder.or(criteriaBuilder.equal(root.get(ScraperRunStatusLogProperties.SCANNED_EVENT_COUNT), 0), criteriaBuilder.isNull(root.get(ScraperRunStatusLogProperties.SCANNED_EVENT_COUNT)));
 
         outputPredicates.add(predicate);
       } else if (Objects.nonNull(searchQuery.scannedEventGreaterThanOrEqualTo())) {
-        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("scannedEventCount"), searchQuery.scannedEventGreaterThanOrEqualTo()));
+        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(ScraperRunStatusLogProperties.SCANNED_EVENT_COUNT), searchQuery.scannedEventGreaterThanOrEqualTo()));
       }
 
       if (Objects.nonNull(searchQuery.hasErrors())) {
         final Predicate predicate = Boolean.TRUE.equals(searchQuery.hasErrors())
-            ? criteriaBuilder.greaterThan(root.get("errorCount"), 0)
-            : criteriaBuilder.or(criteriaBuilder.equal(root.get("errorCount"), 0), criteriaBuilder.isNull(root.get("errorCount")));
+            ? criteriaBuilder.greaterThan(root.get(ScraperRunStatusLogProperties.ERROR_COUNT), 0)
+            : criteriaBuilder.or(criteriaBuilder.equal(root.get(ScraperRunStatusLogProperties.ERROR_COUNT), 0), criteriaBuilder.isNull(root.get(ScraperRunStatusLogProperties.ERROR_COUNT)));
 
         outputPredicates.add(predicate);
       } else if (Objects.nonNull(searchQuery.errorCountGreaterThanOrEqualTo())) {
-        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("errorCount"), searchQuery.errorCountGreaterThanOrEqualTo()));
+        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(ScraperRunStatusLogProperties.ERROR_COUNT), searchQuery.errorCountGreaterThanOrEqualTo()));
       }
 
-      return outputPredicates.stream()
+      final Predicate outputPredicate = outputPredicates.stream()
           .reduce(criteriaBuilder::and)
           .orElse(null);
+
+      Optional.ofNullable(outputPredicate)
+          .ifPresent(predicate -> logger.debug("FindAllStatusLogSpecification output predicate: {}", predicate));
+
+      return outputPredicate;
     }
+
   }
 
   private static class FindAllErrorLogSpecification implements Specification<EntityScraperRunErrorLog> {
+
+    private final transient Logger logger = LoggerFactory.getLogger(FindAllErrorLogSpecification.class);
     private final transient ErrorLogSearchQuery searchQuery;
     private final transient ScraperIdNameCache scraperIdNameCache;
 
@@ -221,28 +243,33 @@ class ScraperLogRepository {
             .stream()
             .map(scraperIdNameCache::getIdByScraperName)
             .toList();
-        outputPredicates.add(criteriaBuilder.in(root.get("scraperId")).value(idsLists));
+        outputPredicates.add(criteriaBuilder.in(root.get(ScraperRunErrorLogProperties.SCRAPER_ID)).value(idsLists));
       }
 
       if (Objects.nonNull(searchQuery.fromDate())) {
-        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time"), searchQuery.fromDate()));
+        outputPredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(ScraperRunErrorLogProperties.TIME), searchQuery.fromDate()));
       }
 
       if (Objects.nonNull(searchQuery.toDate())) {
-        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time"), searchQuery.toDate()));
+        outputPredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(ScraperRunErrorLogProperties.TIME), searchQuery.toDate()));
       }
 
       if (Objects.nonNull(searchQuery.description())) {
-        outputPredicates.add(criteriaBuilder.equal(root.get("description"), searchQuery.description()));
+        outputPredicates.add(criteriaBuilder.equal(root.get(ScraperRunErrorLogProperties.DESCRIPTION), searchQuery.description()));
       }
 
       if (searchQuery.hasErrorCodes()) {
-        outputPredicates.add(criteriaBuilder.in(root.get("errorCode")).value(searchQuery.errorCodes()));
+        outputPredicates.add(criteriaBuilder.in(root.get(ScraperRunErrorLogProperties.ERROR_CODE)).value(searchQuery.errorCodes()));
       }
 
-      return outputPredicates.stream()
+      final Predicate outputPredicate = outputPredicates.stream()
           .reduce(criteriaBuilder::and)
           .orElse(null);
+
+      Optional.ofNullable(outputPredicate)
+          .ifPresent(predicate -> logger.debug("FindAllErrorLogSpecification output predicate: {}", predicate));
+
+      return outputPredicate;
     }
   }
 }

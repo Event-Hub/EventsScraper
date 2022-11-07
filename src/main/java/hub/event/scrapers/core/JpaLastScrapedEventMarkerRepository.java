@@ -17,5 +17,5 @@ interface JpaLastScrapedEventMarkerRepository extends JpaRepository<EntityLastSc
   @Modifying
   @Query("UPDATE scraper_scraped_event_maker m SET m.isComplete = true WHERE m.isComplete = false AND m.runTime >= :date AND  m.scraperId IN :configurationIds")
   @Transactional
-  void updateSetAllActiveById(@Param("configurationIds") List<Integer> configurationIds, @Param("date")Instant date);
+  void setAllAsCompleteByConfigurationsIds(@Param("configurationIds") List<Integer> configurationIds, @Param("date")Instant date);
 }

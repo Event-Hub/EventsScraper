@@ -166,7 +166,7 @@ class ScraperRunServiceTest {
       //then
       scraperRunService.start();
 
-      verify(lastScrapedEventMarkerRepository).markAllMarkersByIdsAsActive(List.of(activeScraper1Config.scraperId(), activeScraper2Config.scraperId()));
+      verify(lastScrapedEventMarkerRepository).setAllAsCompleteByConfigurationsIds(List.of(activeScraper1Config.scraperId(), activeScraper2Config.scraperId()));
     }
   }
 
