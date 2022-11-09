@@ -2,7 +2,8 @@ package hub.event.events.event.dto;
 
 import java.time.ZonedDateTime;
 
-public record EventUpdateDTO(
+public record EventDTO (
+        Long id,
         Long cityId,
         Long placeId,
         ZonedDateTime startDate,

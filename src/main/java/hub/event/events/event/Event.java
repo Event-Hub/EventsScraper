@@ -5,9 +5,6 @@ import hub.event.events.place.Place;
 import hub.event.events.type.Type;
 
 import javax.persistence.*;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;

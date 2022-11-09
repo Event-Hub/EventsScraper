@@ -1,10 +1,7 @@
 package hub.event.events.type;
 
 
-import hub.event.events.event.Event;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "types")
@@ -13,8 +10,6 @@ public class Type {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String type;
-    @ManyToMany(mappedBy = "types")
-    private List<Event> events;
 
     public Type() {
     }
@@ -38,13 +33,5 @@ public class Type {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public List<Event> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<Event> events) {
-        this.events = events;
     }
 }
