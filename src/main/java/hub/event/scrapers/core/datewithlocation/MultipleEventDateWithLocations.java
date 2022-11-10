@@ -31,7 +31,7 @@ public class MultipleEventDateWithLocations {
     return this;
   }
 
-  Collection<EventDateWithLocation> eventDateWithLocations() {
+ public Collection<EventDateWithLocation> eventDateWithLocations() {
     return this.eventDateWithLocations;
   }
 
