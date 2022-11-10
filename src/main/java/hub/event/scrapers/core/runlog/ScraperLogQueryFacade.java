@@ -1,16 +1,15 @@
 package hub.event.scrapers.core.runlog;
 
-import hub.event.scrapers.core.ScraperLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ScraperLogQueryFacade {
-  private final ScraperLogRepository scraperLogRepository;
+  private final ScraperLogQueryRepository scraperLogRepository;
 
-  public ScraperLogQueryFacade(ScraperLogRepository scraperLogRepository) {
-    this.scraperLogRepository = scraperLogRepository;
+  public ScraperLogQueryFacade(ScraperLogQueryRepository scraperLogQueryRepository) {
+    this.scraperLogRepository = scraperLogQueryRepository;
   }
 
   public List<ScraperRunErrorLog> findAllErrorLog(ErrorLogSearchQuery errorLogSearchQuery) {

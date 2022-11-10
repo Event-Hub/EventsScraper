@@ -1,12 +1,9 @@
-package hub.event.scrapers.core;
+package hub.event.scrapers.core.runlog;
 
-import hub.event.scrapers.core.runlog.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -17,7 +14,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles(profiles = "dev")
@@ -27,25 +23,12 @@ class ScraperLogQueryFacadeTest {
   @Autowired
   private ScraperLogQueryFacade scraperLogQueryFacade;
   @Autowired
-  private ScraperLogRepository scraperLogRepository;
+  private ScraperLogQueryRepository scraperLogQueryRepository;
 
-  @MockBean
-  private ScraperIdNameCache scraperIdNameCache;
-
-  private final String configurationName1 = "Scraper1";
+  private final String configurationName1 = "Scraper3";
   private final String configurationName2 = "Scraper2";
-  private final String configurationName3 = "Scraper3";
+  private final String configurationName3 = "Scraper1";
 
-  @BeforeEach
-  void mockCache() {
-    when(scraperIdNameCache.getIdByScraperName(configurationName1)).thenReturn(100000);
-    when(scraperIdNameCache.getIdByScraperName(configurationName2)).thenReturn(200000);
-    when(scraperIdNameCache.getIdByScraperName(configurationName3)).thenReturn(300000);
-
-    when(scraperIdNameCache.getScraperNameById(100000)).thenReturn(configurationName1);
-    when(scraperIdNameCache.getScraperNameById(200000)).thenReturn(configurationName2);
-    when(scraperIdNameCache.getScraperNameById(300000)).thenReturn(configurationName3);
-  }
 
   @Nested
   class ErrorLogQueryTest {
@@ -60,17 +43,17 @@ class ScraperLogQueryFacadeTest {
               ScraperRunErrorLog::description,
               ScraperRunErrorLog::errorCode,
               scraperRunErrorLog -> scraperRunErrorLog.time().toString())
-          .contains(
-              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-19T21:15:00.015Z"),
-              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-20T21:16:00.011Z"),
-              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-21T21:17:00.013Z"),
-              tuple(configurationName1, "Error 1", "ERR_1", "2022-10-23T21:18:00.022Z"),
-              tuple(configurationName1, "Error 1", "ERR_1", "2022-10-24T21:19:00.020Z"),
-              tuple(configurationName2, "Error 1", "ERR_1", "2022-10-19T21:20:00.019Z"),
-              tuple(configurationName2, "Error 10", "ERR_10", "2022-10-30T22:21:00.011Z"),
+          .containsExactly(
+              tuple(configurationName3, "Error 20", "ERR_20", "2022-10-19T21:23:00.020Z"),
               tuple(configurationName3, "Error 1", "ERR_1", "2022-10-19T21:22:00.015Z"),
-              tuple(configurationName3, "Error 20", "ERR_20", "2022-10-19T21:23:00.020Z")
-          );
+              tuple(configurationName2, "Error 10", "ERR_10", "2022-10-30T22:21:00.011Z"),
+              tuple(configurationName2, "Error 1", "ERR_1", "2022-10-19T21:20:00.019Z"),
+              tuple(configurationName1, "Error 1", "ERR_1", "2022-10-24T21:19:00.020Z"),
+              tuple(configurationName1, "Error 1", "ERR_1", "2022-10-23T21:18:00.022Z"),
+              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-21T21:17:00.013Z"),
+              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-20T21:16:00.011Z"),
+              tuple(configurationName1, "Error 0", "ERR_0", "2022-10-19T21:15:00.015Z")
+              );
     }
 
     @Test
@@ -128,7 +111,7 @@ class ScraperLogQueryFacadeTest {
     }
 
     @Test
-    void testSearchBycConfigurationNames() {
+    void testSearchByConfigurationNames() {
       ErrorLogSearchQuery errorLogSearchQuery = ErrorLogSearchQuery.builder()
           .configurationNames(List.of(configurationName2, configurationName3))
           .build();
@@ -147,15 +130,18 @@ class ScraperLogQueryFacadeTest {
     @Test
     void testSearchWithPagination() {
       ErrorLogSearchQuery errorLogSearchQuery = ErrorLogSearchQuery.builder()
-          .page(2, 2)
+          .page(1, 2)
           .build();
       assertThat(scraperLogQueryFacade.findAllErrorLog(errorLogSearchQuery))
           .hasSize(2)
           .extracting(
-              ScraperRunErrorLog::configurationName, ScraperRunErrorLog::description, ScraperRunErrorLog::errorCode)
-          .contains(
-              tuple(configurationName1, "Error 1", "ERR_1"),
-              tuple(configurationName2, "Error 1", "ERR_1")
+              ScraperRunErrorLog::configurationName,
+              ScraperRunErrorLog::description,
+              ScraperRunErrorLog::errorCode,
+              scraperRunErrorLog -> scraperRunErrorLog.time().toString())
+          .containsExactly(
+              tuple(configurationName2, "Error 10", "ERR_10", "2022-10-30T22:21:00.011Z"),
+              tuple(configurationName2, "Error 1", "ERR_1", "2022-10-19T21:20:00.019Z")
           );
     }
 
@@ -199,20 +185,20 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::scannedEventCount,
               ScraperRunStatusLog::errorCount
           )
-          .contains(
+          .containsExactly(
               tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
-              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 2, 0),
-              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 3, null),
-              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 80),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0),
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 3, null),
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 2, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
               tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
-          );
+              );
     }
 
     @Test
@@ -232,7 +218,7 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100)
           );
     }
 
@@ -253,7 +239,7 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100)
           );
     }
 
@@ -273,14 +259,36 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+          );
+    }
+
+    @Test
+    void testSearchByMultipleConditionQuery() {
+      StatusLogSearchQuery statusLogSearchQuery = StatusLogSearchQuery.builder()
+          .startTimeFrom(ZonedDateTime.of(LocalDateTime.of(2022, 10, 1, 0, 0), ZoneId.of(ZONE_ID)).toInstant())
+          .startTimeTo(ZonedDateTime.of(LocalDateTime.of(2022, 10, 5, 0, 0), ZoneId.of(ZONE_ID)).toInstant())
+          .configurationNames(List.of(configurationName1, configurationName3))
+          .build();
+
+      assertThat(scraperLogQueryFacade.findAllStatusLog(statusLogSearchQuery))
+          .hasSize(1)
+          .extracting(
+              ScraperRunStatusLog::configurationName,
+              scraperRunStatusLog -> scraperRunStatusLog.startTime().toString(),
+              scraperRunStatusLog -> scraperRunStatusLog.finishTime().toString(),
+              ScraperRunStatusLog::scannedEventCount,
+              ScraperRunStatusLog::errorCount
+          )
+          .contains(
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100)
           );
     }
 
@@ -301,9 +309,9 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 80),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100)
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0),
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 3, null),
+              tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 2, 0)
           );
     }
   }
@@ -326,13 +334,13 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 80),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
           );
     }
 
@@ -352,13 +360,13 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 80),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
           );
     }
 
@@ -378,8 +386,8 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 2, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 3, null),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0)
@@ -405,14 +413,14 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
           );
     }
 
@@ -432,16 +440,16 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 30, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 2, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 3, null),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 310, 0),
-              tuple("Scraper3", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
-              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
+              tuple("Scraper1", "2022-10-04T18:43:44.735Z", "2022-10-04T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-10-05T18:43:44.735Z", "2022-10-05T18:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-01T19:43:44.735Z", "2022-11-01T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-02T19:43:44.735Z", "2022-11-02T19:43:58.794Z", 230, 100),
+              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 230, 100)
           );
     }
 
@@ -461,7 +469,7 @@ class ScraperLogQueryFacadeTest {
               ScraperRunStatusLog::errorCount
           )
           .contains(
-              tuple("Scraper1", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
+              tuple("Scraper3", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 0),
               tuple("Scraper2", "2022-11-03T19:43:44.735Z", "2022-11-03T19:43:58.794Z", 0, 80)
           );
     }

@@ -2,9 +2,9 @@ DELETE FROM scraper_error_log;
 DELETE FROM scraper_status_log;
 DELETE FROM scraper_config;
 
-INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(100000, 'Scraper1', true, 'Europe/Warsaw');
+INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(100000, 'Scraper3', true, 'Europe/Warsaw');
 INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(200000, 'Scraper2', true, 'Europe/Warsaw');
-INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(300000, 'Scraper3', true, 'Europe/Warsaw');
+INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(300000, 'Scraper1', true, 'Europe/Warsaw');
 INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(400000, 'Scraper4', true, 'Europe/Warsaw');
 INSERT INTO scraper_config (scraper_id, configuration_name, is_active, time_zone) VALUES(500000, 'Scraper5', true, 'Europe/Warsaw');
 

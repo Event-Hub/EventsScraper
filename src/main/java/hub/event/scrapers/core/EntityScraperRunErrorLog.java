@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-@Entity(name = "Scraper_error_log")
+@Entity(name = "scraperErrorLog")
 class EntityScraperRunErrorLog implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

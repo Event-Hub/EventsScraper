@@ -1,11 +1,15 @@
-package hub.event.scrapers.core;
+package hub.event.scrapers.core.runlog;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-@Entity(name = "scraperStatusLog")
+@Entity(name = "queryScraperStatusLog")
+@Table(name = "scraper_status_log")
 class EntityScraperRunStatusLog implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,18 +24,12 @@ class EntityScraperRunStatusLog implements Serializable {
   @Column(nullable = false)
   private Integer errorCount;
 
-  @Column(nullable = false)
-  private Integer scraperId;
+  @ManyToOne
+  @JoinColumn(name = "scraperId", nullable = false, insertable = false, updatable = false)
+  @Fetch(FetchMode.JOIN)
+  private EntityScraperConfig scraperConfig;
 
   EntityScraperRunStatusLog() {
-  }
-
-  EntityScraperRunStatusLog(Integer scraperId, Instant startTime, Instant finishTime, Integer scannedEventCount, Integer errorCount) {
-    this.scraperId = scraperId;
-    this.startTime = startTime;
-    this.finishTime = finishTime;
-    this.scannedEventCount = scannedEventCount;
-    this.errorCount = errorCount;
   }
 
   Integer getLogId() {
@@ -74,12 +72,12 @@ class EntityScraperRunStatusLog implements Serializable {
     this.errorCount = errorCount;
   }
 
-  Integer getScraperId() {
-    return scraperId;
+  void setScraperConfig(EntityScraperConfig scraperConfig) {
+    this.scraperConfig = scraperConfig;
   }
 
-  void setScraperId(Integer scraperId) {
-    this.scraperId = scraperId;
+  EntityScraperConfig getScraperConfig() {
+    return scraperConfig;
   }
 
   @Override
@@ -87,11 +85,27 @@ class EntityScraperRunStatusLog implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     EntityScraperRunStatusLog that = (EntityScraperRunStatusLog) o;
-    return Objects.equals(logId, that.logId) && Objects.equals(startTime, that.startTime) && Objects.equals(finishTime, that.finishTime) && Objects.equals(scannedEventCount, that.scannedEventCount) && Objects.equals(errorCount, that.errorCount) && Objects.equals(scraperId, that.scraperId);
+    return Objects.equals(logId, that.logId) && Objects.equals(startTime, that.startTime) && Objects.equals(finishTime, that.finishTime) && Objects.equals(scannedEventCount, that.scannedEventCount) && Objects.equals(errorCount, that.errorCount) && Objects.equals(scraperConfig, that.scraperConfig);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(logId, startTime, finishTime, scannedEventCount, errorCount, scraperId);
+    return Objects.hash(logId, startTime, finishTime, scannedEventCount, errorCount, scraperConfig);
+  }
+
+  @Override
+  public String toString() {
+    return "EntityScraperRunStatusLog{" +
+        "logId=" + logId +
+        ", startTime=" + startTime +
+        ", finishTime=" + finishTime +
+        ", scannedEventCount=" + scannedEventCount +
+        ", errorCount=" + errorCount +
+        ", scraperConfig=" + scraperConfig +
+        '}';
+  }
+
+  String getScraperConfigurationName() {
+    return scraperConfig.getConfigurationName();
   }
 }

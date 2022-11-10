@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: scraper_config_table_2022_01_17
+      id: scraper_config_table_2022_10_17
       author: batonikleonardo
       comment: Configuration for all avilible scrapers
       changes:
@@ -37,7 +37,7 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id: scraper_status_log_table_2022_01_17
+      id: scraper_status_log_table_2022_10_17
       author: batonikleonardo
       comment : Create teble for scrapers status logs
       changes:
@@ -81,7 +81,7 @@ databaseChangeLog:
                     referencedColumnNames: scraper_id
 
   - changeSet:
-      id: scraper_error_log_table_2022_01_17
+      id: scraper_error_log_table_2022_10_17
       author: batonikleonardo
       comment: Create table for scrapres error logs
       changes:
@@ -120,7 +120,7 @@ databaseChangeLog:
                     referencedColumnNames: scraper_id
 
   - changeSet:
-      id: scraper_scraped_event_maker_table_2022_01_17
+      id: scraper_scraped_event_maker_table_2022_10_17
       author: batonikleonardo
       comment: Create table for for last sraped event marker
       changes:
@@ -165,7 +165,7 @@ databaseChangeLog:
                     referencedColumnNames: scraper_id
 
   - changeSet:
-      id: scraper_status_log_index_2022_01_17
+      id: scraper_status_log_index_2022_10_17
       author: batonikleonardo
       comment : scrapers status logs scraper id index
       changes:
@@ -173,15 +173,19 @@ databaseChangeLog:
            preConditions:
              not:
                indexExists:
-                 indexName: status_log_scraper_id_idx
+                 indexName: status_log_serach_idx
            tableName:  scraper_status_log
+           indexName:  status_log_scraper_id_idx
            columns:
             - column:
-                name:  scraper_id
-           indexName:  status_log_scraper_id_idx
+                name:  start_time
+                descending:  true
+            - column:
+                name:  log_id
+                descending:  true
 
   - changeSet:
-      id: scraper_error_log_index_2022_01_17
+      id: scraper_error_log_index_2022_10_17
       author: batonikleonardo
       comment: scrapers error logs scraper id index
       changes:
@@ -189,9 +193,13 @@ databaseChangeLog:
            preConditions:
              not:
                indexExists:
-                 indexName: error_log_scraper_id_idx
+                 indexName: error_log_serach_idx
            tableName:  scraper_error_log
+           indexName:  error_log_scraper_id_idx
            columns:
             - column:
-                name:  scraper_id
-           indexName:  error_log_scraper_id_idx
+                name:  error_time
+                descending:  true
+            - column:
+                name:  log_id
+                descending:  true
