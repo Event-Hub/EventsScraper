@@ -1,0 +1,205 @@
+databaseChangeLog:
+  - changeSet:
+      id: scraper_config_table_2022_10_17
+      author: batonikleonardo
+      comment: Configuration for all avilible scrapers
+      changes:
+        - createTable:
+            preConditions:
+              not:
+                tableExists:
+                  tableName: scraper_config
+            tableName: scraper_config
+            remarks: Create scraper for configuration for all avilible scrapers
+            columns:
+              - column:
+                  name: scraper_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: configuration_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_zone
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: scraper_status_log_table_2022_10_17
+      author: batonikleonardo
+      comment : Create teble for scrapers status logs
+      changes:
+        - createTable:
+            preConditions:
+              not:
+                tableExists:
+                  tableName: scraper_status_log
+            tableName: scraper_status_log
+            remarks: Scrapers status logs
+            columns:
+              - column:
+                  name: log_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: error_count
+                  type: int
+              - column:
+                  name: start_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: finish_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scanned_event_count
+                  type: int
+              - column:
+                  name: scraper_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: status_log_scraper_fk
+                    referencedTableName: scraper_config
+                    referencedColumnNames: scraper_id
+
+  - changeSet:
+      id: scraper_error_log_table_2022_10_17
+      author: batonikleonardo
+      comment: Create table for scrapres error logs
+      changes:
+        - createTable:
+            preConditions:
+              not:
+                tableExists:
+                  tableName: scraper_error_log
+            tableName: scraper_error_log
+            remarks: Scrapres error logs
+            columns:
+              - column:
+                  name: log_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: description
+                  type: varchar
+              - column:
+                  name: error_code
+                  type: varchar
+              - column:
+                  name: error_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scraper_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: error_log_scraper_fk
+                    referencedTableName: scraper_config
+                    referencedColumnNames: scraper_id
+
+  - changeSet:
+      id: scraper_scraped_event_maker_table_2022_10_17
+      author: batonikleonardo
+      comment: Create table for for last sraped event marker
+      changes:
+        - createTable:
+            preConditions:
+              not:
+                tableExists:
+                  tableName: scraper_scraped_event_maker
+            tableName: scraper_scraped_event_maker
+            remarks: Marker for last sraped event
+            columns:
+              - column:
+                  name: marker_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: event_title
+                  type: varchar
+              - column:
+                  name: is_complete
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: marker
+                  type: varchar
+              - column:
+                  name: run_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scraper_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: maker_scraper_fk
+                    referencedTableName: scraper_config
+                    referencedColumnNames: scraper_id
+
+  - changeSet:
+      id: scraper_status_log_index_2022_10_17
+      author: batonikleonardo
+      comment : scrapers status logs scraper id index
+      changes:
+       - createIndex:
+           preConditions:
+             not:
+               indexExists:
+                 indexName: status_log_serach_idx
+           tableName:  scraper_status_log
+           indexName:  status_log_scraper_id_idx
+           columns:
+            - column:
+                name:  start_time
+                descending:  true
+            - column:
+                name:  log_id
+                descending:  true
+
+  - changeSet:
+      id: scraper_error_log_index_2022_10_17
+      author: batonikleonardo
+      comment: scrapers error logs scraper id index
+      changes:
+       - createIndex:
+           preConditions:
+             not:
+               indexExists:
+                 indexName: error_log_serach_idx
+           tableName:  scraper_error_log
+           indexName:  error_log_scraper_id_idx
+           columns:
+            - column:
+                name:  error_time
+                descending:  true
+            - column:
+                name:  log_id
+                descending:  true

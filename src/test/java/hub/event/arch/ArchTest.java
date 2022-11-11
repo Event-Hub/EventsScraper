@@ -39,6 +39,7 @@ class ArchTest {
     public static final String JAVAX = "..javax..";
     public static final String HTMLUNIT = "..htmlunit..";
     public static final String JSOUP = "..jsoup..";
+    private static final String SLF4J = "..org.slf4j..";
 
 
     @Test
@@ -53,7 +54,7 @@ class ArchTest {
                         SCRAPERS_KUPBILECIK, SCRAPERS_PROANIMA)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(JAVA, JAVAX, SPRING,
-                        EVENTS, SCRAPERS);
+                        EVENTS, SCRAPERS, SLF4J);
 
         archRule.check(javaClasses);
 

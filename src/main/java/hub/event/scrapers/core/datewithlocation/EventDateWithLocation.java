@@ -1,0 +1,75 @@
+package hub.event.scrapers.core.datewithlocation;
+
+import hub.event.scrapers.core.exceptions.EventDateInPastException;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+
+class EventDateWithLocation {
+  private final LocalDate startDate;
+  private final LocalDate endDate;
+  private final LocalTime startTime;
+  private final LocalTime endTime;
+
+  private final ZoneId timeZone;
+
+  private final EventLocation eventLocation;
+
+  public EventDateWithLocation(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, ZoneId timeZone, String city, String address, String locationName) {
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.timeZone = timeZone;
+    this.eventLocation = new EventLocation(city, address, locationName);
+  }
+
+  public EventDateWithLocation(LocalDate date, LocalTime time, ZoneId timeZone, String city, String address, String locationName) throws EventDateInPastException {
+    inputDateValidation(date);
+    this.timeZone = timeZone;
+    this.startDate = date;
+    this.endDate = null;
+    this.startTime = time;
+    this.endTime = null;
+    this.eventLocation = new EventLocation(city, address, locationName);
+  }
+
+  String city() {
+    return eventLocation.city();
+  }
+
+  LocalDate startDate() {
+    return startDate;
+  }
+
+  LocalTime startTime() {
+    return startTime;
+  }
+
+  LocalDate endDate() {
+    return endDate;
+  }
+
+  LocalTime endTime() {
+    return endTime;
+  }
+
+  String address() {
+    return eventLocation.address();
+  }
+
+  String locationName() {
+    return eventLocation.name();
+  }
+
+  ZoneId timeZone() {
+    return timeZone;
+  }
+
+  private void inputDateValidation(LocalDate date) throws EventDateInPastException {
+    if (date.isBefore(LocalDate.now())) {
+      throw new EventDateInPastException(date);
+    }
+  }
+}
