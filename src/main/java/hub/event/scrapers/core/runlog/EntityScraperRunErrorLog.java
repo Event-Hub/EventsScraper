@@ -1,8 +1,5 @@
 package hub.event.scrapers.core.runlog;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -23,7 +20,6 @@ class EntityScraperRunErrorLog implements Serializable {
   private String description;
   @ManyToOne
   @JoinColumn(name = "scraperId", nullable = false, insertable = false, updatable = false)
-  @Fetch(FetchMode.JOIN)
   private EntityScraperConfig scraperConfig;
 
   EntityScraperRunErrorLog() {
